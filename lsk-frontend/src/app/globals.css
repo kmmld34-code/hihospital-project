@@ -1,0 +1,68 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 30, 41, 59;
+  --background-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: #FFFFFF;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  overflow-x: hidden;
+  letter-spacing: -0.02em;
+}
+
+/* ==============================================================================
+   Gem_ 커스텀 글로벌 레이아웃 및 컴포넌트 유틸리티 클래스
+   ============================================================================== */
+
+/* 1400px 중앙 정렬 컨테이너 규격 */
+.Gem_Container {
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .Gem_Container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .Gem_Container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* 카드 기본 및 호버 효과 */
+.Gem_Card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.Gem_Card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px -4px rgba(0, 82, 204, 0.12);
+  border-color: #cbd5e1;
+}
+
+/* 텍스트 그라디언트 포인트 */
+.Gem_TextGradient {
+  background: linear-gradient(135deg, #0052CC 0%, #00A8B5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
