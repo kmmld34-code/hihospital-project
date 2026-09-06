@@ -1,0 +1,439 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "meta": {
+    "project": "HI Hospital (LSK Hospital Project)",
+    "title": "Main Index UI/UX Design System & Layout Specifications",
+    "version": "1.0.0",
+    "author": "정재이 과장 (Lead UI/UX Designer)",
+    "assignee": "고윤기 대리 (Frontend Lead Engineer)",
+    "director": "수진 실장 (Project Manager)",
+    "architect": "박동훈 차장 (Lead System Architect)",
+    "updatedAt": "2026-09-06",
+    "techStack": {
+      "framework": "Next.js 14+ (App Router)",
+      "library": "React 18+",
+      "styling": "Tailwind CSS v3.4+",
+      "icons": "Lucide React",
+      "animations": "Framer Motion 11+"
+    }
+  },
+  "globalLayout": {
+    "contentMaxWidth": "1400px",
+    "containerClassName": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8",
+    "rules": {
+      "strictWidthConstraint": "모든 메인 및 서브 콘텐츠 블록은 반드시 max-w-[1400px] mx-auto 컨테이너 내부 중앙 정렬 배치",
+      "fullWidthBackgroundExceptions": [
+        "Header Navigation Background (헤더 상단 전체 배경)",
+        "Footer Background (최하단 푸터 전체 배경)"
+      ],
+      "innerAlignmentRule": "풀배경이 적용되는 헤더와 푸터라 할지라도, 내부의 로고, 네비게이션 메뉴, CTA 버튼, 사업자 정보, 카피라이트 텍스트 등 모든 유효 요소는 1400px 박스 내부에 정확히 정렬되어야 함"
+    }
+  },
+  "colorTokens": {
+    "primary": {
+      "DEFAULT": "#0052CC",
+      "hover": "#0043A6",
+      "light": "#EBF2FC",
+      "dark": "#071E54",
+      "description": "인천하이병원 고유의 신뢰감 있는 메디컬 로열 블루 톤"
+    },
+    "secondary": {
+      "DEFAULT": "#00A8B5",
+      "hover": "#008B96",
+      "light": "#E0F7F9",
+      "description": "비수술 클리닉, 첨단 진단 장비 강조용 시언/민트"
+    },
+    "accent": {
+      "DEFAULT": "#F59E0B",
+      "hover": "#D97706",
+      "light": "#FEF3C7",
+      "description": "바로서구병원 벤치마킹 퀵 예약, 긴급안내, 대표전화 하이라이트"
+    },
+    "neutral": {
+      "white": "#FFFFFF",
+      "bgSurface": "#F8FAFC",
+      "cardSurface": "#FFFFFF",
+      "borderLight": "#E2E8F0",
+      "borderSubtle": "#F1F5F9",
+      "textMain": "#1E293B",
+      "textMuted": "#64748B",
+      "textLight": "#94A3B8"
+    },
+    "shadows": {
+      "card": "0 4px 20px -2px rgba(15, 23, 42, 0.06)",
+      "cardHover": "0 12px 30px -4px rgba(0, 82, 204, 0.12)",
+      "stickyMenu": "0 10px 25px -3px rgba(7, 30, 84, 0.15)",
+      "floatingBar": "0 16px 36px -6px rgba(7, 30, 84, 0.14)"
+    }
+  },
+  "components": {
+    "headerNavigation": {
+      "type": "FullWidthHeaderWithCenteredContent",
+      "containerClass": "w-full bg-white/95 backdrop-blur-md sticky top-0 z-40 border-b border-slate-100",
+      "innerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8",
+      "subComponents": {
+        "topUtilityBar": {
+          "enabled": true,
+          "containerClass": "w-full bg-slate-50 border-b border-slate-200/60 py-1.5 text-xs text-slate-600 hidden md:block",
+          "innerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between",
+          "leftElements": [
+            { "type": "badge", "text": "24시간 응급의료센터 운영", "className": "bg-red-50 text-red-600 font-semibold px-2 py-0.5 rounded-full mr-3" },
+            { "type": "text", "text": "진료시간: 평일 09:00~18:00 | 토요일 09:00~13:00 (점심시간 없음)" }
+          ],
+          "rightElements": [
+            { "type": "link", "label": "로그인", "href": "/auth/login" },
+            { "type": "link", "label": "회원가입", "href": "/auth/register" },
+            { "type": "link", "label": "예약확인", "href": "/appointments/my" }
+          ]
+        },
+        "mainGnb": {
+          "height": "80px",
+          "innerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[80px]",
+          "logo": {
+            "title": "HI HOSPITAL",
+            "symbolAlt": "HI Hospital 로고",
+            "src": "/assets/images/logo.svg",
+            "href": "/"
+          },
+          "menuItems": [
+            { "name": "병원소개", "href": "/about", "badge": null },
+            { "name": "뇌신경", "href": "/neurosurgery", "badge": null },
+            { "name": "척추클리닉", "href": "/spine", "badge": "특화" },
+            { "name": "무릎·고관절", "href": "/knee-hip", "badge": "특화" },
+            { "name": "어깨관절", "href": "/shoulder", "badge": null },
+            { "name": "수·족부", "href": "/hand-foot", "badge": null },
+            { "name": "외과진료", "href": "/surgery-general", "badge": null },
+            { "name": "내과진료", "href": "/internal-medicine", "badge": null },
+            { "name": "건강검진", "href": "/checkup", "badge": null },
+            { "name": "산부인과", "href": "/obgyn", "badge": null },
+            { "name": "커뮤니티", "href": "/community", "badge": null }
+          ],
+          "rightCTA": {
+            "label": "온라인 진료예약",
+            "href": "/appointments",
+            "className": "bg-[#0052CC] hover:bg-[#0043A6] text-white font-medium px-5 py-2.5 rounded-full transition-all shadow-md hover:shadow-lg"
+          }
+        }
+      }
+    },
+    "heroCarousel": {
+      "type": "HeroBannerCarousel",
+      "placement": "Immediately below Navigation (GNB 바로 아래)",
+      "containerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-4 md:mt-6",
+      "sliderClass": "relative w-full h-[480px] md:h-[580px] lg:h-[640px] rounded-3xl overflow-hidden shadow-xl bg-slate-900",
+      "interactionSpecs": {
+        "autoplayInterval": 7000,
+        "autoplayUnit": "milliseconds (약 7초 주기)",
+        "direction": "right-to-left (우에서 좌로 슬라이딩)",
+        "pauseOnHover": true,
+        "resumeOnMouseLeave": true,
+        "transitionType": "smooth-slide-or-crossfade",
+        "transitionDuration": 800,
+        "keyboardNavigation": true,
+        "touchSwipe": true
+      },
+      "navigationControls": {
+        "showArrows": true,
+        "arrowStyle": "absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white flex items-center justify-center transition-all z-20 cursor-pointer",
+        "showIndicators": true,
+        "indicatorStyle": "absolute bottom-8 left-12 z-20 flex items-center space-x-3",
+        "progressBar": true,
+        "playPauseButton": true
+      },
+      "slidesDataSchema": {
+        "description": "향후 관리자(CMS/DB)가 슬라이드를 쉽게 추가, 수정, 삭제할 수 있는 데이터 구조",
+        "fields": [
+          "id: string (고유 ID)",
+          "order: number (정렬 순서)",
+          "isActive: boolean (노출 여부)",
+          "badge: string (카테고리/강조 배지)",
+          "headline: string (메인 카피라이트)",
+          "subheadline: string (보조 설명 문구)",
+          "backgroundImage: string (데스크톱용 고해상도 이미지)",
+          "mobileImage: string (모바일 최적화 이미지)",
+          "ctaText: string (버튼 문구)",
+          "ctaLink: string (이동 URL)",
+          "isEntireSlideClickable: boolean (슬라이드 전체 클릭 여부)"
+        ]
+      },
+      "defaultSlides": [
+        {
+          "id": "slide-01",
+          "order": 1,
+          "isActive": true,
+          "badge": "대학병원급 정밀 진단 시스템",
+          "headline": "응급치료부터 고난이도 수술까지,\n척추·관절 명의의 정확한 진료",
+          "subheadline": "365일 24시간 응급시설을 완비한 관절·척추 특화 전문 HI Hospital",
+          "backgroundImage": "/assets/images/hero/hero_banner_01.webp",
+          "ctaText": "온라인 간편 예약하기",
+          "ctaLink": "/appointments",
+          "ctaStyle": "bg-[#0052CC] text-white hover:bg-[#0043A6]",
+          "isEntireSlideClickable": true
+        },
+        {
+          "id": "slide-02",
+          "order": 2,
+          "isActive": true,
+          "badge": "최첨단 3.0T MRI & 128채널 CT",
+          "headline": "원스톱 당일 검사 & 당일 판독\n기다림 없는 빠른 진단 솔루션",
+          "subheadline": "첨단 의료 장비를 통한 미세 병변의 조기 발견 및 맞춤형 치료 계획 수립",
+          "backgroundImage": "/assets/images/hero/hero_banner_02.webp",
+          "ctaText": "정밀 장비 둘러보기",
+          "ctaLink": "/about/facility",
+          "ctaStyle": "bg-[#00A8B5] text-white hover:bg-[#008B96]",
+          "isEntireSlideClickable": false
+        },
+        {
+          "id": "slide-03",
+          "order": 3,
+          "isActive": true,
+          "badge": "풍부한 임상경험의 10인 전문의",
+          "headline": "대학병원 외래교수 출신 의료진의\n정직하고 세심한 1:1 맞춤 협진",
+          "subheadline": "환자의 평생 관절·척추 건강을 최우선으로 생각하는 명품 의료진",
+          "backgroundImage": "/assets/images/hero/hero_banner_03.webp",
+          "ctaText": "10인 전문의 프로필 확인",
+          "ctaLink": "/about/doctors",
+          "ctaStyle": "bg-white text-[#071E54] hover:bg-slate-100",
+          "isEntireSlideClickable": true
+        },
+        {
+          "id": "slide-04",
+          "order": 4,
+          "isActive": true,
+          "badge": "칼 대신 정확한 시술로",
+          "headline": "환자 부담을 최소화하는\n비수술 우선 척추·관절 치료",
+          "subheadline": "신경차단술, 체외충격파, 1:1 도수재활 치료로 빠르게 일상 복귀",
+          "backgroundImage": "/assets/images/hero/hero_banner_04.webp",
+          "ctaText": "비수술 치료법 알아보기",
+          "ctaLink": "/spine/non-surgery",
+          "ctaStyle": "bg-[#0052CC] text-white hover:bg-[#0043A6]",
+          "isEntireSlideClickable": true
+        }
+      ]
+    },
+    "stickyQuickMenu": {
+      "type": "FixedRightFloatingSideBar",
+      "description": "스크롤과 무관하게 화면 우측에 항상 고정되는 세로형 퀵 내비게이션 배너",
+      "position": "fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-50",
+      "containerClass": "flex flex-col items-center bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200/80 p-2 space-y-2 w-[84px] text-center",
+      "headerBadge": {
+        "text": "QUICK",
+        "className": "text-[10px] font-bold tracking-wider text-[#0052CC] bg-[#EBF2FC] px-2 py-0.5 rounded-md mb-1"
+      },
+      "items": [
+        {
+          "id": "quick-resv",
+          "icon": "CalendarCheck",
+          "label": "간편예약",
+          "href": "/appointments",
+          "highlight": true,
+          "className": "text-[#0052CC] hover:bg-[#EBF2FC] font-semibold"
+        },
+        {
+          "id": "quick-time",
+          "icon": "Clock",
+          "label": "진료시간",
+          "href": "/about/hours",
+          "highlight": false,
+          "className": "text-slate-700 hover:bg-slate-100"
+        },
+        {
+          "id": "quick-loc",
+          "icon": "MapPin",
+          "label": "오시는길",
+          "href": "/about/directions",
+          "highlight": false,
+          "className": "text-slate-700 hover:bg-slate-100"
+        },
+        {
+          "id": "quick-call",
+          "icon": "PhoneCall",
+          "label": "전화상담",
+          "href": "tel:1600-8549",
+          "highlight": false,
+          "className": "text-slate-700 hover:bg-slate-100"
+        },
+        {
+          "id": "quick-kakao",
+          "icon": "MessageSquare",
+          "label": "카톡상담",
+          "href": "https://pf.kakao.com/_example",
+          "highlight": false,
+          "className": "text-amber-600 hover:bg-amber-50"
+        },
+        {
+          "id": "quick-top",
+          "icon": "ArrowUp",
+          "label": "TOP",
+          "action": "scrollToTop",
+          "highlight": false,
+          "className": "text-slate-400 hover:text-slate-700 pt-2 border-t border-slate-200 w-full"
+        }
+      ]
+    },
+    "quickReservationFormBar": {
+      "type": "FullWidthBarWithCenteredForm",
+      "containerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-30",
+      "innerClass": "bg-white rounded-2xl shadow-xl border border-slate-200/80 p-5 md:p-6",
+      "formFields": [
+        { "name": "patientName", "label": "환자 성함", "type": "text", "placeholder": "성함을 입력하세요", "required": true },
+        { "name": "patientPhone", "label": "연락처", "type": "tel", "placeholder": "휴대폰 번호 (-없이 입력)", "required": true },
+        {
+          "name": "deptId",
+          "label": "진료 희망 과목",
+          "type": "select",
+          "options": ["진료과목 선택", "척추클리닉", "무릎·고관절", "어깨관절", "뇌신경센터", "일반내과", "건강검진"],
+          "required": true
+        },
+        { "name": "agreePrivacy", "label": "개인정보 수집 및 이용 동의", "type": "checkbox", "required": true }
+      ],
+      "submitButton": {
+        "text": "간편 진료예약 신청",
+        "className": "bg-[#0052CC] hover:bg-[#0043A6] text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-md hover:shadow-lg w-full md:w-auto"
+      }
+    },
+    "interactiveBodyNavigator": {
+      "type": "3DBodyPainSelectorSection",
+      "containerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24",
+      "header": {
+        "badge": "INCHEON HI SIGNATURE TECH",
+        "title": "내 통증 부위를 3D로 확인하세요",
+        "subtitle": "아픈 신체 부위를 클릭하시면 해당 질환과 맞춤형 전문 진료과를 즉시 안내해 드립니다."
+      },
+      "bodyParts": [
+        { "id": "neck", "name": "목 (경추)", "diseases": ["목디스크", "거북목", "일자목증후군", "경추협착증"], "targetUrl": "/spine/cervical-disc" },
+        { "id": "shoulder", "name": "어깨", "diseases": ["회전근개파열", "오십견", "석회화건염", "어깨충돌증후군"], "targetUrl": "/shoulder" },
+        { "id": "back", "name": "허리 (요추)", "diseases": ["허리디스크", "척추관협착증", "척추전방전위증", "압박골절"], "targetUrl": "/spine/lumbar-disc" },
+        { "id": "knee", "name": "무릎", "diseases": ["퇴행성관절염", "연골판손상", "십자인대파열", "연골연화증"], "targetUrl": "/knee-hip" },
+        { "id": "handFoot", "name": "손·발", "diseases": ["손목터널증후군", "방아쇠수지", "무지외반증", "족저근막염"], "targetUrl": "/hand-foot" },
+        { "id": "brain", "name": "뇌신경", "diseases": ["두통·어지럼증", "치매", "뇌졸중", "손발저림"], "targetUrl": "/neurosurgery" }
+      ]
+    },
+    "doctorsSpotlight": {
+      "type": "DoctorsCarouselSection",
+      "containerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20",
+      "header": {
+        "badge": "10인의 분야별 전문의",
+        "title": "풍부한 임상경험과 검증된 실력의 의료진",
+        "subtitle": "대학병원 출신 각 분과별 전문의 10인이 책임 진료와 협진을 약속합니다."
+      },
+      "categoryTabs": ["전체", "척추외과", "관절정형외과", "신경과", "일반외과", "내과"],
+      "layoutGrid": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6",
+      "cardSpec": {
+        "containerClass": "bg-white rounded-2xl overflow-hidden border border-slate-200/70 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group",
+        "imageAspect": "aspect-[3/4] object-cover object-top w-full bg-slate-100",
+        "contentPadding": "p-5",
+        "badgeClass": "text-xs font-semibold text-[#0052CC] bg-[#EBF2FC] px-2.5 py-1 rounded-md inline-block mb-2",
+        "nameClass": "text-lg font-bold text-slate-800 group-hover:text-[#0052CC] transition-colors",
+        "titleClass": "text-sm text-slate-500 mb-3",
+        "specialtyListClass": "text-xs text-slate-600 space-y-1 mb-4"
+      }
+    },
+    "specialtyCenters": {
+      "type": "SpecialtyCentersGrid",
+      "containerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16",
+      "header": {
+        "badge": "SPECIAL CLINICS",
+        "title": "HI Hospital 중점 특화 진료센터",
+        "subtitle": "풍부한 치료 경험과 최첨단 수술/비수술 설비로 질환의 근본 원인을 치료합니다."
+      },
+      "gridClass": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6",
+      "cards": [
+        {
+          "id": "center-spine",
+          "title": "최소침습 척추센터",
+          "desc": "미세현미경, 척추내시경, 디스크 유합술",
+          "tag": "수술/비수술 원스톱",
+          "bgImage": "/assets/images/centers/center_spine.webp",
+          "link": "/spine"
+        },
+        {
+          "id": "center-joint",
+          "title": "맞춤형 인공관절센터",
+          "desc": "3D 맞춤 인공관절 수술, 관절내시경 시술",
+          "tag": "최소절개 빠른보행",
+          "bgImage": "/assets/images/centers/center_joint.webp",
+          "link": "/knee-hip/knee-replacement"
+        },
+        {
+          "id": "center-neuro",
+          "title": "뇌신경·치매센터",
+          "desc": "두통, 어지럼증, 치매 정밀검사 및 조기예방",
+          "tag": "골든타임 케어",
+          "bgImage": "/assets/images/centers/center_neuro.webp",
+          "link": "/neurosurgery"
+        },
+        {
+          "id": "center-dialysis",
+          "title": "인공신장실 (혈액투석)",
+          "desc": "최신 고효율 투석기계 완비, 감염 예방 음압실",
+          "tag": "쾌적한 투석환경",
+          "bgImage": "/assets/images/centers/center_dialysis.webp",
+          "link": "/internal-medicine/dialysis"
+        }
+      ]
+    },
+    "patientStoryAndNews": {
+      "type": "PatientStoryAndNewsSplitSection",
+      "containerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16",
+      "layout": "grid grid-cols-1 lg:grid-cols-2 gap-10",
+      "leftStory": {
+        "title": "생생한 환자 치료 스토리",
+        "subtitle": "HI Hospital을 통해 통증 없는 일상을 되찾은 환자분들의 리얼 인터뷰",
+        "cardClass": "bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md transition-all flex space-x-4",
+        "videoModalEnabled": true
+      },
+      "rightNews": {
+        "title": "HI Hospital 소식 및 언론보도",
+        "subtitle": "언론에 소개된 원내 소식과 의료진 학술 연구 활동",
+        "listClass": "space-y-4"
+      }
+    },
+    "facilityTour": {
+      "type": "FacilityTourSection",
+      "containerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16",
+      "header": {
+        "badge": "HOSPITAL TOUR",
+        "title": "대학병원급 시설 및 첨단 검사장비",
+        "subtitle": "환자의 편안한 치유와 쾌적한 진료를 위해 철저한 위생과 최신 설비를 구축했습니다."
+      },
+      "tabs": ["전체", "진료실/대기실", "정밀영상센터 (MRI/CT)", "무균수술실", "물리도수치료실", "입원실"],
+      "gridClass": "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+    },
+    "footer": {
+      "type": "FullWidthFooterWithCenteredContent",
+      "containerClass": "w-full bg-[#071E54] text-slate-300 py-16 border-t border-slate-800",
+      "innerClass": "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8",
+      "topRow": {
+        "hours": {
+          "title": "진료시간 안내",
+          "details": [
+            "평일: 오전 09:00 ~ 오후 18:00 (점심시간: 12:30 ~ 13:30)",
+            "토요일: 오전 09:00 ~ 오후 13:00 (점심시간 없이 진료)",
+            "일요일/공휴일: 외래 휴진",
+            "응급의료센터: 365일 24시간 정상 운영"
+          ]
+        },
+        "contact": {
+          "phone": "1600-8549",
+          "phoneSub": "응급실 직통: 02-1588-0001",
+          "address": "서울특별시 서구 메디컬로 123 HI빌딩 (지하철역 3번 출구)"
+        }
+      },
+      "bottomRow": {
+        "legalLinks": [
+          { "label": "개인정보처리방침", "href": "/privacy", "highlight": true },
+          { "label": "이용약관", "href": "/terms" },
+          { "label": "비급여 진료비용 고지", "href": "/community/non-reimbursable", "highlight": true },
+          { "label": "환자의 권리와 의무", "href": "/patient-rights" },
+          { "label": "원격지원", "href": "/support" }
+        ],
+        "businessInfo": [
+          "의료기관명: HI Hospital | 대표원장: 김진수 | 사업자등록번호: 123-45-67890",
+          "주소: 서울특별시 서구 메디컬로 123 | 대표전화: 1600-8549 | 팩스: 02-1588-0002",
+          "COPYRIGHT © 2026 HI HOSPITAL. ALL RIGHTS RESERVED."
+        ]
+      }
+    }
+  }
+}
