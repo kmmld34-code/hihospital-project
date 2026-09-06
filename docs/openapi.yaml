@@ -1,0 +1,1083 @@
+openapi: 3.0.3
+info:
+  title: HI Hospital Web Platform API Specification
+  description: |
+    ### HI Hospital 통합 병원 정보 시스템 REST API 명세서 (OpenAPI 3.0.3)
+    
+    본 API 명세서는 **Next.js 프론트엔드(lsk-frontend)**와 **g7 기반 백엔드(lsk-backend/Gem_Custom)** 간의
+    Axios 비동기 HTTP 통신을 위한 인터페이스 표준 규격입니다.
+    
+    #### 💡 보안 및 개인정보 보호 지침
+    - 모든 통신은 `HTTPS`를 기본으로 하며, Authorization Header를 통한 `Bearer JWT` 인증을 적용합니다.
+    - 주민등록번호, 연락처, 환자 상담 내용 등 민감 정보는 DB 저장 전 AES-256 등의 알고리즘으로 양방향 암호화하거나 단방향 해시(비밀번호) 처리됩니다.
+    - 개인정보 조회 응답 시에는 마스킹 정책(이름: 홍*동, 전화번호: 010-****-1234)이 기본 적용됩니다.
+  version: 1.0.0
+  contact:
+    name: 박동훈 차장 (Lead System Architect)
+    email: arch.park@hihospital.co.kr
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: 로컬 개발 서버 (Local Dev Server)
+  - url: https://api.hihospital.co.kr/api/v1
+    description: 운영 프로덕션 서버 (Production Server)
+
+tags:
+  - name: 01. Auth & Member
+    description: 회원가입, 로그인, JWT 토큰 관리 및 내 정보
+  - name: 02. Departments & Doctors
+    description: 진료과 안내 및 의료진 프로필/일정
+  - name: 03. Appointments
+    description: 진료 예약, 예약 가능 시간 조회 및 예약 취소
+  - name: 04. Consultations & QnA
+    description: 온라인 1:1 상담, 비공개 비밀상담 및 답변
+  - name: 05. Boards & Health Info
+    description: 공지사항, 건강 칼럼, 병원 소식 및 FAQ
+  - name: 06. Hospital Info
+    description: 병원 기본 정보, 층별 안내, 오시는 길
+
+paths:
+  # ============================================================================
+  # 01. Auth & Member (인증 및 회원 관리)
+  # ============================================================================
+  /auth/login:
+    post:
+      tags:
+        - 01. Auth & Member
+      summary: 사용자 로그인 및 JWT 토큰 발급
+      description: 아이디(또는 이메일)와 비밀번호를 검증하여 Access Token과 Refresh Token을 반환합니다.
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '401':
+          description: 인증 실패 (아이디 또는 비밀번호 불일치)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/register:
+    post:
+      tags:
+        - 01. Auth & Member
+      summary: 신규 회원가입
+      description: 환자 및 일반 사용자 계정을 생성합니다. 비밀번호 및 민감정보는 백엔드에서 강력한 암호화가 적용됩니다.
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: 회원가입 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponse'
+        '409':
+          description: 이미 존재하는 아이디 또는 이메일
+
+  /auth/refresh:
+    post:
+      tags:
+        - 01. Auth & Member
+      summary: Access Token 갱신
+      description: 만료된 Access Token을 Refresh Token을 통해 재발급합니다.
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+      responses:
+        '200':
+          description: 토큰 갱신 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+
+  /auth/me:
+    get:
+      tags:
+        - 01. Auth & Member
+      summary: 현재 로그인 사용자 프로필 조회
+      description: 로그인된 토큰을 바탕으로 내 계정 정보와 진료 예약 내역 요약을 가져옵니다.
+      operationId: getCurrentUserProfile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 프로필 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '401':
+          description: 유효하지 않거나 만료된 토큰
+
+  # ============================================================================
+  # 02. Departments & Doctors (진료과 및 의료진)
+  # ============================================================================
+  /departments:
+    get:
+      tags:
+        - 02. Departments & Doctors
+      summary: 전체 진료과 목록 조회
+      description: 병원의 모든 진료과(내과, 정형외과, 신경과 등) 목록과 요약 설명을 조회합니다.
+      operationId: getDepartments
+      responses:
+        '200':
+          description: 진료과 목록 반환
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Department'
+
+  /departments/{dept_id}:
+    get:
+      tags:
+        - 02. Departments & Doctors
+      summary: 진료과 상세 정보 및 소속 의료진 조회
+      operationId: getDepartmentDetail
+      parameters:
+        - name: dept_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 'dept_internal_med'
+      responses:
+        '200':
+          description: 진료과 상세 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/DepartmentDetail'
+
+  /doctors:
+    get:
+      tags:
+        - 02. Departments & Doctors
+      summary: 의료진 목록 검색 및 필터링
+      description: 진료과별, 전문분야별, 의료진 이름 키워드로 의료진 목록을 조회합니다.
+      operationId: getDoctors
+      parameters:
+        - name: dept_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 특정 진료과 필터링 ID
+        - name: keyword
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 의료진 이름 또는 질환명 키워드
+      responses:
+        '200':
+          description: 의료진 목록 반환
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DoctorSummary'
+
+  /doctors/{doctor_id}:
+    get:
+      tags:
+        - 02. Departments & Doctors
+      summary: 의료진 상세 프로필 및 주간 진료 일정
+      operationId: getDoctorDetail
+      parameters:
+        - name: doctor_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 'doc_kim_001'
+      responses:
+        '200':
+          description: 의료진 상세 정보
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/DoctorDetail'
+
+  # ============================================================================
+  # 03. Appointments (온라인 진료 예약 시스템)
+  # ============================================================================
+  /appointments/available-slots:
+    get:
+      tags:
+        - 03. Appointments
+      summary: 특정 날짜 및 의료진의 예약 가능 시간대 슬롯 조회
+      description: 캘린더에서 날짜를 선택했을 때 실시간으로 잔여 예약 슬롯(09:00, 09:30 등)을 가져옵니다.
+      operationId: getAvailableSlots
+      parameters:
+        - name: doctor_id
+          in: query
+          required: true
+          schema:
+            type: string
+          example: 'doc_kim_001'
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: '2026-09-15'
+      responses:
+        '200':
+          description: 예약 가능 시간대 배열
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  date:
+                    type: string
+                    example: '2026-09-15'
+                  slots:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimeSlot'
+
+  /appointments:
+    post:
+      tags:
+        - 03. Appointments
+      summary: 진료 예약 신청 (회원 및 비회원 본인인증)
+      description: 환자의 진료 예약을 접수합니다. 비회원의 경우 휴대폰 본인인증 토큰을 포함해야 합니다.
+      operationId: createAppointment
+      security:
+        - BearerAuth: []
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppointmentRequest'
+      responses:
+        '201':
+          description: 진료 예약 접수 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentResponse'
+        '400':
+          description: 선택한 시간대 마감 또는 유효하지 않은 데이터
+
+  /appointments/my:
+    get:
+      tags:
+        - 03. Appointments
+      summary: 내 진료 예약 내역 조회 (회원 전용)
+      operationId: getMyAppointments
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 예약 목록 반환
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AppointmentItem'
+
+  /appointments/{appointment_id}/cancel:
+    patch:
+      tags:
+        - 03. Appointments
+      summary: 진료 예약 취소 신청
+      operationId: cancelAppointment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: appointment_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 'apt_20260915_0012'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cancel_reason:
+                  type: string
+                  example: '개인 사정으로 인한 취소'
+      responses:
+        '200':
+          description: 예약 취소 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponse'
+
+  # ============================================================================
+  # 04. Consultations & QnA (온라인 상담)
+  # ============================================================================
+  /consultations:
+    get:
+      tags:
+        - 04. Consultations & QnA
+      summary: 온라인 상담 게시글 목록 (페이지네이션)
+      description: 비공개 글은 제목만 노출되며 본문은 마스킹 처리됩니다.
+      operationId: getConsultations
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: category
+          in: query
+          schema:
+            type: string
+            example: '척추관절'
+      responses:
+        '200':
+          description: 상담 목록 반환
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultationListResponse'
+
+    post:
+      tags:
+        - 04. Consultations & QnA
+      summary: 온라인 상담글 작성
+      description: 새로운 의료 상담 질문을 작성합니다. 비밀글 설정 시 암호화 비밀번호를 지정할 수 있습니다.
+      operationId: createConsultation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConsultationRequest'
+      responses:
+        '201':
+          description: 상담 등록 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponse'
+
+  /consultations/{consultation_id}:
+    get:
+      tags:
+        - 04. Consultations & QnA
+      summary: 상담글 상세 내용 및 답변 조회
+      operationId: getConsultationDetail
+      parameters:
+        - name: consultation_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 105
+        - name: secret_password
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 비공개 글일 경우 확인용 비밀번호
+      responses:
+        '200':
+          description: 상담 상세 및 전문의 답변
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultationDetail'
+        '403':
+          description: 비밀번호 불일치 또는 열람 권한 없음
+
+  # ============================================================================
+  # 05. Boards & Health Info (게시판 및 건강 정보)
+  # ============================================================================
+  /boards/{board_id}/posts:
+    get:
+      tags:
+        - 05. Boards & Health Info
+      summary: 게시판 글 목록 조회 (공지사항/건강칼럼/언론보도 등)
+      operationId: getBoardPosts
+      parameters:
+        - name: board_id
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [notice, news, health_column, faq]
+          example: 'notice'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 게시글 목록
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostListResponse'
+
+  /boards/{board_id}/posts/{post_id}:
+    get:
+      tags:
+        - 05. Boards & Health Info
+      summary: 게시글 상세 내용 조회
+      operationId: getPostDetail
+      parameters:
+        - name: board_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 'notice'
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 42
+      responses:
+        '200':
+          description: 게시글 상세
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostDetail'
+
+  # ============================================================================
+  # 06. Hospital Info (병원 안내)
+  # ============================================================================
+  /hospital/info:
+    get:
+      tags:
+        - 06. Hospital Info
+      summary: 병원 종합 안내 정보 조회
+      description: 병원 소개, 진료시간표, 응급실 운영 안내, 층별 시설, 오시는 길(교통편/주차)
+      operationId: getHospitalInfo
+      responses:
+        '200':
+          description: 병원 메타데이터 반환
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HospitalInfo'
+
+# ==============================================================================
+# Components & Data Models
+# ==============================================================================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: '인증 헤더: Bearer <JWT_ACCESS_TOKEN>'
+
+  schemas:
+    CommonResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: '요청이 성공적으로 처리되었습니다.'
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error_code:
+          type: string
+          example: 'AUTH_INVALID_CREDENTIALS'
+        message:
+          type: string
+          example: '아이디 또는 비밀번호가 일치하지 않습니다.'
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: 'patient_hong'
+        password:
+          type: string
+          format: password
+          example: 'SecureP@ssw0rd!'
+
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - password
+        - name
+        - phone_number
+      properties:
+        username:
+          type: string
+          example: 'patient_hong'
+        password:
+          type: string
+          format: password
+          example: 'SecureP@ssw0rd!'
+        name:
+          type: string
+          example: '홍길동'
+        phone_number:
+          type: string
+          example: '010-1234-5678'
+        email:
+          type: string
+          format: email
+          example: 'hong@example.com'
+        birth_date:
+          type: string
+          format: date
+          example: '1988-05-20'
+        gender:
+          type: string
+          enum: [M, F]
+          example: 'M'
+
+    AuthTokenResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        access_token:
+          type: string
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+        refresh_token:
+          type: string
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+        token_type:
+          type: string
+          example: 'bearer'
+        expires_in:
+          type: integer
+          example: 3600
+
+    UserProfileResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            username:
+              type: string
+              example: 'patient_hong'
+            name:
+              type: string
+              example: '홍길동'
+            phone_number:
+              type: string
+              example: '010-****-5678'
+            email:
+              type: string
+              example: 'h***@example.com'
+            created_at:
+              type: string
+              format: date-time
+              example: '2026-01-10T09:30:00Z'
+
+    Department:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'dept_ortho'
+        name:
+          type: string
+          example: '정형외과'
+        eng_name:
+          type: string
+          example: 'Orthopedics'
+        summary:
+          type: string
+          example: '관절, 척추, 외상 및 스포츠 손상 전문 치료'
+        icon_url:
+          type: string
+          example: '/assets/icons/orthopedics.svg'
+        doctor_count:
+          type: integer
+          example: 4
+
+    DepartmentDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'dept_ortho'
+        name:
+          type: string
+          example: '정형외과'
+        description:
+          type: string
+          example: '최첨단 관절내시경 및 최소침습 척추수술을 통한 환자 중심 맞춤 치료를 제공합니다.'
+        clinic_location:
+          type: string
+          example: '본관 2층 정형외과 외래진료실'
+        doctors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DoctorSummary'
+
+    DoctorSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'doc_kim_001'
+        name:
+          type: string
+          example: '김진수'
+        title:
+          type: string
+          example: '대표원장 / 정형외과 전문의'
+        dept_name:
+          type: string
+          example: '정형외과'
+        specialty:
+          type: array
+          items:
+            type: string
+          example: ['인공관절', '무릎관절', '스포츠외상']
+        image_url:
+          type: string
+          example: '/assets/images/doctors/kim_jinsu.webp'
+
+    DoctorDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'doc_kim_001'
+        name:
+          type: string
+          example: '김진수'
+        title:
+          type: string
+          example: '대표원장 / 의학박사'
+        dept_id:
+          type: string
+          example: 'dept_ortho'
+        dept_name:
+          type: string
+          example: '정형외과'
+        specialty:
+          type: array
+          items:
+            type: string
+          example: ['무릎관절', '퇴행성관절염', '인공관절 수술']
+        profile_image:
+          type: string
+          example: '/assets/images/doctors/kim_jinsu_full.webp'
+        career_history:
+          type: array
+          items:
+            type: string
+          example:
+            - '서울대학교 의과대학 졸업'
+            - '서울대학교병원 정형외과 전공의 수료'
+            - '대한정형외과학회 정회원'
+        weekly_schedule:
+          type: object
+          properties:
+            mon: { type: string, example: '오전/오후' }
+            tue: { type: string, example: '수술' }
+            wed: { type: string, example: '오전' }
+            thu: { type: string, example: '오전/오후' }
+            fri: { type: string, example: '오전' }
+            sat: { type: string, example: '격주진료' }
+
+    TimeSlot:
+      type: object
+      properties:
+        time:
+          type: string
+          example: '10:30'
+        is_available:
+          type: boolean
+          example: true
+
+    CreateAppointmentRequest:
+      type: object
+      required:
+        - doctor_id
+        - dept_id
+        - appointment_date
+        - appointment_time
+        - patient_name
+        - patient_phone
+      properties:
+        doctor_id:
+          type: string
+          example: 'doc_kim_001'
+        dept_id:
+          type: string
+          example: 'dept_ortho'
+        appointment_date:
+          type: string
+          format: date
+          example: '2026-09-15'
+        appointment_time:
+          type: string
+          example: '10:30'
+        patient_name:
+          type: string
+          example: '이순신'
+        patient_phone:
+          type: string
+          example: '010-9876-5432'
+        symptom_detail:
+          type: string
+          example: '오른쪽 무릎 보행 시 지속적인 통증 발생'
+        is_first_visit:
+          type: boolean
+          example: true
+
+    AppointmentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        appointment_id:
+          type: string
+          example: 'apt_20260915_0012'
+        message:
+          type: string
+          example: '진료 예약이 정상적으로 접수되었습니다. 카카오 알림톡이 발송되었습니다.'
+
+    AppointmentItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'apt_20260915_0012'
+        doctor_name:
+          type: string
+          example: '김진수 원장'
+        dept_name:
+          type: string
+          example: '정형외과'
+        appointment_date:
+          type: string
+          example: '2026-09-15'
+        appointment_time:
+          type: string
+          example: '10:30'
+        status:
+          type: string
+          enum: [RESERVED, COMPLETED, CANCELLED]
+          example: 'RESERVED'
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-09-06T10:00:00Z'
+
+    ConsultationListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        total_count:
+          type: integer
+          example: 120
+        page:
+          type: integer
+          example: 1
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 105
+              category:
+                type: string
+                example: '척추질환'
+              title:
+                type: string
+                example: '허리 디스크 비수술 치료 문의드립니다.'
+              author_name:
+                type: string
+                example: '김*민'
+              is_secret:
+                type: boolean
+                example: true
+              has_reply:
+                type: boolean
+                example: true
+              created_at:
+                type: string
+                example: '2026-09-05'
+
+    CreateConsultationRequest:
+      type: object
+      required:
+        - category
+        - title
+        - content
+        - author_name
+        - phone_number
+      properties:
+        category:
+          type: string
+          example: '척추관절'
+        title:
+          type: string
+          example: '무릎 통증 관련 문의드립니다.'
+        content:
+          type: string
+          example: '최근 등산 후 계단을 내려올 때 무릎에 찌릿한 통증이 있습니다.'
+        author_name:
+          type: string
+          example: '홍길동'
+        phone_number:
+          type: string
+          example: '010-1234-5678'
+        is_secret:
+          type: boolean
+          example: true
+        password:
+          type: string
+          description: '비공개글 조회를 위한 4자리 이상 비밀번호'
+          example: '1234'
+
+    ConsultationDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 105
+        category:
+          type: string
+          example: '척추질환'
+        title:
+          type: string
+          example: '허리 디스크 비수술 치료 문의드립니다.'
+        content:
+          type: string
+          example: '허리와 다리 저림 증상이 심한데 수술 없이 치료 가능한 방법이 있을까요?'
+        author_name:
+          type: string
+          example: '김*민'
+        created_at:
+          type: string
+          example: '2026-09-05 14:20'
+        answer:
+          type: object
+          nullable: true
+          properties:
+            doctor_name:
+              type: string
+              example: '김진수 원장'
+            dept_name:
+              type: string
+              example: '정형외과'
+            content:
+              type: string
+              example: '초기 및 중기 디스크의 경우 신경차단술, 도수치료, 물리치료 등 비수술적 요법으로 80% 이상 호전이 가능합니다.'
+            answered_at:
+              type: string
+              example: '2026-09-05 17:00'
+
+    PostListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        total_count:
+          type: integer
+          example: 54
+        page:
+          type: integer
+          example: 1
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 42
+              title:
+                type: string
+                example: '2026년 추석 연휴 응급진료 및 외래 휴진 안내'
+              view_count:
+                type: integer
+                example: 320
+              created_at:
+                type: string
+                example: '2026-09-01'
+              thumbnail_url:
+                type: string
+                nullable: true
+                example: '/assets/images/posts/notice_banner.jpg'
+
+    PostDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 42
+        board_id:
+          type: string
+          example: 'notice'
+        title:
+          type: string
+          example: '2026년 추석 연휴 응급진료 및 외래 휴진 안내'
+        content:
+          type: string
+          example: '<p>안녕하세요. HI Hospital입니다. 추석 연휴 기간 동안...</p>'
+        author:
+          type: string
+          example: '병원행정팀'
+        view_count:
+          type: integer
+          example: 321
+        created_at:
+          type: string
+          example: '2026-09-01 10:00'
+        attachments:
+          type: array
+          items:
+            type: object
+            properties:
+              file_name:
+                type: string
+                example: '2026_chuseok_schedule.pdf'
+              download_url:
+                type: string
+                example: '/api/v1/files/download/notice/42/1'
+
+    HospitalInfo:
+      type: object
+      properties:
+        hospital_name:
+          type: string
+          example: 'HI Hospital'
+        representative:
+          type: string
+          example: '김진수'
+        address:
+          type: string
+          example: '서울특별시 강남구 테헤란로 123 HI빌딩'
+        phone:
+          type: string
+          example: '02-1588-0000'
+        emergency_phone:
+          type: string
+          example: '02-1588-0001 (24시간 응급의료센터)'
+        business_hours:
+          type: object
+          properties:
+            weekday:
+              type: string
+              example: '09:00 ~ 18:00 (점심시간 12:30 ~ 13:30)'
+            saturday:
+              type: string
+              example: '09:00 ~ 13:00 (점심시간 없음)'
+            sunday_holiday:
+              type: string
+              example: '외래 휴진 (응급실 24시간 정상 운영)'
