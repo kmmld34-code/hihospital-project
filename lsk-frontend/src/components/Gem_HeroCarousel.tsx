@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { GEM_HERO_SLIDES, GemSlideItem } from "@/data/hospitalData";
 import { ChevronLeft, ChevronRight, ArrowRight, Eye } from "lucide-react";
 
@@ -11,18 +12,15 @@ import { ChevronLeft, ChevronRight, ArrowRight, Eye } from "lucide-react";
  * ==============================================================================
  * 작성자: 고윤기 대리 (Frontend Lead Engineer)
  * 기획 및 디자인 감수: 강수진 PM
+ * 아키텍처 및 이미지 감수: 박동훈 차장, 오은수 대리
  * ==============================================================================
- * [주요 구현 사양]
- * 1. 엣지투엣지(Full-width) 배경:
- *    - 화면 전체를 아우르는 딥네이비(#071E54) 배경 및 하이테크 수술실 배경 이미지
- *    - 다채로운 그라데이션 오버레이로 텍스트 가독성 확보
- * 2. 내부 1400px 중앙 정렬 컨테이너:
- *    - 모든 카테고리 뱃지, 헤드라인, 액션 버튼, 슬라이드 게이지는 max-w-[1400px] mx-auto 엄수
- * 3. 사용자 인터랙션:
- *    - 7초(7,000ms) 주기 우에서 좌로 자동 슬라이딩
- *    - 마우스 오버(Hover) 시 슬라이더 자동 회전 일시 정지(Pause)
- *    - 좌우 큼직한 원형 백드롭 블러 네비게이션 버튼 제공
- *    - 하단 진행 게이지 바 실시간 동기화 (01 ~ 04)
+ * [이미지 최적화 원칙 반영 (고윤기 & 오은수 & 박동훈)]
+ * 1. Next.js <Image> 컴포넌트 강제화:
+ *    - Next.js 내장 이미지 컴포넌트로 레이아웃 이동(CLS) 원천 차단
+ * 2. LCP 최적화:
+ *    - 첫 번째 슬라이드(첫 화면 최대 면적 이미지)에 priority={true}를 부여하여 LCP 2.5초 이내 달성
+ * 3. 차세대 포맷 자동 서빙:
+ *    - AVIF/WebP 포맷으로 변환되어 서빙되도록 sizes="100vw" 지정
  * ==============================================================================
  */
 export default function Gem_HeroCarousel() {
@@ -95,13 +93,16 @@ export default function Gem_HeroCarousel() {
                 isActive ? "opacity-100" : "opacity-0 pointer-events-none"
               }`}
             >
-              {/* 배경 고화질 메디컬 이미지 */}
-              <img
+              {/* Next.js 고효율 최적화 배경 이미지 (LCP 1순위 priority 적용) */}
+              <Image
                 src={slide.backgroundImage}
                 alt={slide.headline}
-                className="w-full h-full object-cover object-center opacity-40 mix-blend-luminosity transform scale-105 transition-transform duration-7000"
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                className="object-cover object-center opacity-40 mix-blend-luminosity transform scale-105 transition-transform duration-7000"
               />
-              {/* 좌측 텍스트 영역을 어둡게 밝혀주는 딥네이비 선형 그라데이션 */}
+              {/* 좌측 텍스트 영역 가독성을 위한 딥네이비 선형 그라데이션 */}
               <div className="absolute inset-0 bg-gradient-to-r from-[#071E54] via-[#071E54]/85 to-transparent" />
               {/* 비네팅 방사형 그림자 효과 */}
               <div className="absolute inset-0 bg-radial from-transparent via-transparent to-black/60" />
