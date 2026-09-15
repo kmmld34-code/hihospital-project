@@ -31,10 +31,10 @@ import { ChevronLeft, ChevronRight, ArrowRight, Eye } from "lucide-react";
  */
 export default function Gem_HeroCarousel() {
   const slides = GEM_HERO_SLIDES;
-  const totalSlides = slides.length; // 동적 슬라이드 개수 (관리자 페이지 연동 준비)
+  const totalSlides = slides.length; // 동적 슬라이드 개수 (관리자 페이지 연동 대비)
 
   // 가상 복제본을 앞뒤로 추가한 확장 슬라이드 트랙 생성 (Seamless Infinite Loop 구조)
-  // [마지막 복제본, 1번, 2번, 3번, 4번, 1번 복제본]
+  // [마지막 복제본(인덱스 0), 1번, 2번, 3번, 4번, 1번 복제본(인덱스 totalSlides + 1)]
   const extendedSlides = [
     { ...slides[totalSlides - 1], uniqueKey: "clone-last" },
     ...slides.map((s, idx) => ({ ...s, uniqueKey: `real-${idx}` })),
@@ -47,52 +47,126 @@ export default function Gem_HeroCarousel() {
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  // [버그 방지 핵심 1] 연속 클릭(광클) 방지 잠금 플래그
+  const isAnimatingRef = useRef(false);
+  // [버그 방지 핵심 2] 브라우저 transitionEnd 이벤트 유실 대비 안전 타이머
+  const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const progressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const SLIDE_DURATION = 7000; // 7초 주기
+  const SLIDE_DURATION = 7000; // 7초 자동 롤링 주기
+  const TRANSITION_SPEED = 500; // 슬라이드 전환 속도 (500ms로 빠르고 쾌적하게 설정)
 
-  // 현재 사용자가 바라보고 있는 실제 슬라이드 번호 계산 (1 ~ totalSlides)
-  const getRealSlideNumber = (): number => {
-    if (currentIndex === 0) return totalSlides;
-    if (currentIndex === extendedSlides.length - 1) return 1;
-    return currentIndex;
+  // [버그 방지 핵심 3] 수학적 모듈러 연산으로 음수 및 오버플로우 100% 원천 차단
+  // currentIndex가 어떤 값이 오더라도 항상 1 ~ totalSlides 범위의 정수만 보장
+  const getRealSlideNumber = (idx: number): number => {
+    return (((idx - 1) % totalSlides) + totalSlides) % totalSlides + 1;
   };
 
-  const realNumber = getRealSlideNumber();
+  const realNumber = getRealSlideNumber(currentIndex);
+
+  // [버그 방지 핵심 4] 가상 복제본 도달 시 실제 슬라이드로 순간 이동(Instant Jump)
+  const checkAndResetIndex = useCallback(
+    (targetIndex: number) => {
+      if (targetIndex >= extendedSlides.length - 1) {
+        // 우측 끝 1번 복제본에 도달한 경우 -> 애니메이션 끄고 실제 1번 슬라이드로 순간 이동
+        setIsTransitioning(false);
+        setCurrentIndex(1);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            isAnimatingRef.current = false;
+          });
+        });
+      } else if (targetIndex <= 0) {
+        // 좌측 끝 마지막 복제본에 도달한 경우 -> 애니메이션 끄고 실제 마지막 슬라이드로 순간 이동
+        setIsTransitioning(false);
+        setCurrentIndex(totalSlides);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            isAnimatingRef.current = false;
+          });
+        });
+      } else {
+        isAnimatingRef.current = false;
+      }
+    },
+    [extendedSlides.length, totalSlides]
+  );
 
   // 다음 슬라이드로 우 ➜ 좌 이동
   const nextSlide = useCallback(() => {
+    // 이미 애니메이션 중이면 중복 클릭 무시 (연타 방지)
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
     setIsTransitioning(true);
-    setCurrentIndex((prev) => prev + 1);
+
+    setCurrentIndex((prev) => {
+      // 만약 이미 복제본 경계에 가 있다면 안전하게 기준점을 1번으로 리셋 후 전진
+      let base = prev;
+      if (base >= extendedSlides.length - 1) base = 1;
+      if (base <= 0) base = totalSlides;
+
+      const next = base + 1;
+
+      // 브라우저에서 onTransitionEnd 이벤트가 누락될 경우를 대비한 550ms 안전 타이머
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = setTimeout(() => {
+        checkAndResetIndex(next);
+      }, TRANSITION_SPEED + 50);
+
+      return next;
+    });
     setProgress(0);
-  }, []);
+  }, [checkAndResetIndex, extendedSlides.length, totalSlides]);
 
   // 이전 슬라이드로 좌 ➜ 우 이동
   const prevSlide = useCallback(() => {
+    // 이미 애니메이션 중이면 중복 클릭 무시 (연타 방지)
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
     setIsTransitioning(true);
-    setCurrentIndex((prev) => prev - 1);
+
+    setCurrentIndex((prev) => {
+      // 만약 이미 복제본 경계에 가 있다면 안전하게 기준점을 totalSlides로 리셋 후 후진
+      let base = prev;
+      if (base <= 0) base = totalSlides;
+      if (base >= extendedSlides.length - 1) base = 1;
+
+      const next = base - 1;
+
+      // 브라우저에서 onTransitionEnd 이벤트가 누락될 경우를 대비한 550ms 안전 타이머
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = setTimeout(() => {
+        checkAndResetIndex(next);
+      }, TRANSITION_SPEED + 50);
+
+      return next;
+    });
     setProgress(0);
-  }, []);
+  }, [checkAndResetIndex, extendedSlides.length, totalSlides]);
 
   // 특정 슬라이드 번호로 바로가기 (하단 닷 클릭 시)
   const goToSlide = (realIdx: number) => {
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
     setIsTransitioning(true);
-    setCurrentIndex(realIdx + 1);
+    const target = realIdx + 1;
+    setCurrentIndex(target);
+
+    if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+    fallbackTimerRef.current = setTimeout(() => {
+      isAnimatingRef.current = false;
+    }, TRANSITION_SPEED + 50);
+
     setProgress(0);
   };
 
-  // 트랜지션 완료 시 무한 루프 순간 점프 처리 (되감기 현상 방지 핵심 로직)
+  // 트랜지션 정상 완료 시 이벤트 핸들러
   const handleTransitionEnd = () => {
-    if (currentIndex === extendedSlides.length - 1) {
-      // 1번 복제본에 도달한 직후 -> 애니메이션 끄고 실제 1번 슬라이드로 순간 이동
-      setIsTransitioning(false);
-      setCurrentIndex(1);
-    } else if (currentIndex === 0) {
-      // 마지막 복제본에 도달한 직후 -> 애니메이션 끄고 실제 마지막 슬라이드로 순간 이동
-      setIsTransitioning(false);
-      setCurrentIndex(totalSlides);
+    if (fallbackTimerRef.current) {
+      clearTimeout(fallbackTimerRef.current);
     }
+    checkAndResetIndex(currentIndex);
   };
 
   // 7초 자동 롤링 및 프로그레스 바 제어
@@ -118,6 +192,7 @@ export default function Gem_HeroCarousel() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
     };
   }, [isPaused, nextSlide]);
 
@@ -137,7 +212,7 @@ export default function Gem_HeroCarousel() {
           style={{
             transform: `translateX(-${currentIndex * 100}%)`,
             transition: isTransitioning
-              ? "transform 700ms cubic-bezier(0.25, 1, 0.5, 1)"
+              ? `transform ${TRANSITION_SPEED}ms cubic-bezier(0.25, 1, 0.5, 1)`
               : "none",
           }}
         >
