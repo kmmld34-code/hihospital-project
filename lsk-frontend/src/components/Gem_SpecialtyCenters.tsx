@@ -2,85 +2,123 @@
 
 import React from "react";
 import Link from "next/link";
-import { GEM_SPECIAL_CENTERS } from "@/data/hospitalData";
-import { ArrowRight, ShieldCheck, Activity, Brain, HeartPulse } from "lucide-react";
+import { GEM_SPECIAL_CENTERS, GemSpecialCenterItem } from "@/data/hospitalData";
+import { ArrowRight, Cpu, Brain, HeartPulse, Stethoscope } from "lucide-react";
 
 /**
  * ==============================================================================
- * [Gem_SpecialtyCenters] HI Hospital 4대 중점 특화 진료센터
+ * [Gem_SpecialtyCenters] 인천하이병원 중점 특화 진료센터 큐레이션
  * ==============================================================================
- * - 1400px 컨테이너 규격 엄수 (max-w-[1400px] mx-auto)
- * - 최소침습 척추, 맞춤형 인공관절, 뇌신경·치매, 인공신장실
+ * 작성자: 고윤기 대리 (Frontend Lead Engineer)
+ * 기획 및 디자인 감수: 강수진 PM
+ * ==============================================================================
+ * [주요 구현 사양]
+ * 1. 1400px 중앙 정렬 컨테이너:
+ *    - max-w-[1400px] mx-auto 규격 엄수
+ * 2. 프리미엄 그라데이션 헤더 배너:
+ *    - 각 카드 상단에 딥네이비(#071E54)에서 로열블루(#0052CC)로 흐르는 그라데이션 박스 배치
+ *    - 아이콘 및 영문 센터명, 한글 센터명 우측 정렬
+ * 3. 4대 특화 센터 카드 구성:
+ *    - 1) 최소침습 척추센터 (수술/비수술 원스톱)
+ *    - 2) 맞춤형 인공관절센터 (최소절개 빠른보행)
+ *    - 3) 뇌신경·치매센터 (골든타임 케어)
+ *    - 4) 인공신장실 (혈액투석) (쾌적한 투석환경)
+ * 4. 마우스 인터랙션:
+ *    - 호버 시 자연스러운 카드 부유 효과(-translate-y-2) 및 화살표 모션
  * ==============================================================================
  */
 export default function Gem_SpecialtyCenters() {
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case "Activity":
-        return <Activity className="w-6 h-6 text-white" />;
-      case "ShieldAlert":
-        return <ShieldCheck className="w-6 h-6 text-white" />;
-      case "Brain":
-        return <Brain className="w-6 h-6 text-white" />;
-      case "HeartPulse":
-        return <HeartPulse className="w-6 h-6 text-white" />;
+  const renderCenterIcon = (id: string, iconUrl: string) => {
+    switch (id) {
+      case "spine":
+        return (
+          <img
+            src={iconUrl}
+            alt="척추센터 아이콘"
+            className="w-10 h-10 object-contain"
+          />
+        );
+      case "joint":
+        return <Cpu className="w-10 h-10 text-[#87F3FF]" />;
+      case "neuro":
+        return <Brain className="w-10 h-10 text-[#87F3FF]" />;
+      case "dialysis":
+        return <HeartPulse className="w-10 h-10 text-[#87F3FF]" />;
       default:
-        return <Activity className="w-6 h-6 text-white" />;
+        return <Stethoscope className="w-10 h-10 text-[#87F3FF]" />;
     }
   };
 
   return (
-    <section className="Gem_SpecialtySection w-full py-16 md:py-24 bg-slate-50 border-t border-slate-100">
+    <section className="Gem_SpecialtySection w-full py-16 sm:py-20 bg-white" id="specialty-centers">
       <div className="Gem_Container max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 상단 헤더 */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs font-bold text-[#0052CC] tracking-wider uppercase block mb-1">
-            EXCELLENCE IN HEALTHCARE
+        {/* 1. 상단 섹션 헤더 */}
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <span className="inline-block bg-teal-50 text-[#008B96] text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider mb-2">
+            SPECIALTY CENTERS
           </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-800 tracking-tight mb-3">
-            HI Hospital <span className="text-[#0052CC]">4대 중점 특화센터</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+            중점 특화 진료센터 큐레이션
           </h2>
-          <p className="text-sm text-slate-500 font-normal">
-            분야별 고도화된 특화 클리닉과 최신 설비로 증상의 근본적인 원인을 정확히 해결합니다.
+          <p className="text-xs sm:text-sm md:text-base text-slate-500 mt-2 break-keep">
+            인천하이병원은 분과별 첨단 전문 장비와 집중 치료 시스템을 완비하여
+            빠르고 안전한 일상 복귀를 약속합니다.
           </p>
         </div>
 
-        {/* 4열 그리드 카드 (1400px 내부) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {GEM_SPECIAL_CENTERS.map((center, index) => (
-            <Link
-              key={index}
-              href={center.link}
-              className="Gem_Card p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group"
+        {/* 2. 4열 특화센터 카드 그리드 (1400px 내부) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {GEM_SPECIAL_CENTERS.map((center: GemSpecialCenterItem) => (
+            <div
+              key={center.id}
+              className="bg-white rounded-3xl p-6 sm:p-7 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between group border border-slate-100"
             >
               <div>
-                {/* 상단 아이콘 및 배지 */}
-                <div className="flex items-center justify-between mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#0052CC] to-[#00A8B5] flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                    {getIcon(center.icon)}
+                {/* 상단 딥네이비 -> 로열블루 그라데이션 배너 박스 */}
+                <div className="w-full rounded-2xl bg-gradient-to-r from-[#071E54] via-[#003D9B] to-[#0052CC] p-4 mb-6 shadow-md border border-white/10 flex items-center justify-between gap-3 overflow-hidden group-hover:shadow-lg transition-all">
+                  {/* 좌측 아이콘 박스 */}
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-xl bg-white/10 p-1.5 flex items-center justify-center backdrop-blur-sm group-hover:scale-105 transition-transform duration-300">
+                    {renderCenterIcon(center.id, center.icon)}
                   </div>
-                  <span className="text-[11px] font-bold text-[#0052CC] bg-[#EBF2FC] px-2.5 py-1 rounded-full">
-                    {center.badge}
-                  </span>
+
+                  {/* 우측 센터 영문명 및 한글명 */}
+                  <div className="flex-1 flex flex-col justify-center items-end text-right gap-0.5 min-w-0">
+                    <span className="text-[#87F3FF] text-xs font-bold tracking-wider uppercase">
+                      {center.englishTitle}
+                    </span>
+                    <span className="text-white font-black text-base sm:text-lg tracking-tight leading-snug break-keep">
+                      {center.bannerTitle}
+                    </span>
+                  </div>
                 </div>
 
-                <span className="text-[11px] font-semibold text-slate-400 block uppercase tracking-wider mb-1">
-                  {center.subtitle}
+                {/* 특화 뱃지 */}
+                <span
+                  className={`inline-block text-xs font-bold px-2.5 py-1 rounded-full mb-3 ${center.badgeColor}`}
+                >
+                  {center.badge}
                 </span>
-                <h3 className="text-lg font-bold text-slate-800 group-hover:text-[#0052CC] transition-colors mb-2">
+
+                {/* 센터 타이틀 */}
+                <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#0052CC] transition-colors">
                   {center.title}
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed mb-6">
+
+                {/* 센터 세부 설명 */}
+                <p className="text-xs sm:text-sm text-slate-500 mt-3 leading-relaxed break-keep">
                   {center.desc}
                 </p>
               </div>
 
-              {/* 하단 화살표 링크 */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#0052CC]">
-                <span>상세 센터 안내</span>
+              {/* 하단 링크 버튼 */}
+              <Link
+                href={center.link}
+                className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between text-[#0052CC] text-xs sm:text-sm font-bold group-hover:text-[#0043A6]"
+              >
+                <span>센터 상세정보</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
-              </div>
-            </Link>
+              </Link>
+            </div>
           ))}
         </div>
       </div>

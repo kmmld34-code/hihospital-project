@@ -1,216 +1,280 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Gem_HeroCarousel from "@/components/Gem_HeroCarousel";
 import Gem_QuickReservationBar from "@/components/Gem_QuickReservationBar";
 import Gem_InteractiveBody3D from "@/components/Gem_InteractiveBody3D";
 import Gem_DoctorsSpotlight from "@/components/Gem_DoctorsSpotlight";
+import Gem_ClinicalMetrics from "@/components/Gem_ClinicalMetrics";
 import Gem_SpecialtyCenters from "@/components/Gem_SpecialtyCenters";
-import { Play, ArrowRight, ShieldCheck, Newspaper, Award } from "lucide-react";
+import { GEM_NEWS_ITEMS, GEM_FACILITIES, GemFacilityItem } from "@/data/hospitalData";
+import {
+  ChevronRight,
+  Star,
+  Camera,
+  ArrowRight,
+  ShieldCheck,
+  Building,
+} from "lucide-react";
 
 /**
  * ==============================================================================
- * [HI Hospital] 메인 인덱스 홈 페이지
+ * [HI Hospital] 메인 인덱스 홈 페이지 (스티치 디자인 전면 반영)
  * ==============================================================================
- * - 핵심 규격: 모든 본문 블록은 max-w-[1400px] mx-auto 중앙 정렬!
- * - 구성:
- *   1) Gem_HeroCarousel: 최상단 7초 자동 롤링 캐러셀 슬라이더
- *   2) Gem_QuickReservationBar: 플로팅 퀵 간편예약 신청 바
- *   3) Gem_InteractiveBody3D: 인천하이병원 시그니처 3D 통증 부위 자가진단
- *   4) Gem_DoctorsSpotlight: 바로서구병원 벤치마킹 10인 전문의 스포트라이트
- *   5) Gem_SpecialtyCenters: 4대 중점 특화 진료센터
- *   6) 환자 치료 스토리 & HI NEWS 언론보도 섹션
- *   7) 첨단 시설 및 의료장비 갤러리 섹션
+ * 작성자: 고윤기 대리 (Frontend Lead Engineer)
+ * 기획 및 디자인 감수: 강수진 PM
+ * ==============================================================================
+ * [프로젝트 핵심 원칙]
+ * 1. 1400px 컨테이너 규격 엄수:
+ *    - 모든 섹션의 본문 콘텐츠는 max-w-[1400px] mx-auto 중앙 정렬
+ * 2. Gem_ 접두사 명명 규칙 준수:
+ *    - 컴포넌트 및 주요 식별 클래스에 Gem_ 접두사 적용
+ * 3. 스티치 메인 페이지 전체 구조:
+ *    - 1) Gem_HeroCarousel: 최상단 풀와이드 7초 자동 롤링 캐러셀 배너
+ *    - 2) Gem_QuickReservationBar: 1400px 플로팅 원스톱 간편예약 신청 바 (750px 동의 모달 포함)
+ *    - 3) Gem_InteractiveBody3D: 6대 신체 부위 인터랙티브 자가진단 카드
+ *    - 4) Gem_DoctorsSpotlight: 풍부한 임상경험과 검증된 실력의 10인 전문의 섹션
+ *    - 5) Gem_ClinicalMetrics: 신뢰할 수 있는 임상 경험과 풍부한 수술 실적 (5,000례+)
+ *    - 6) Gem_SpecialtyCenters: 중점 특화 진료센터 4대 큐레이션
+ *    - 7) 환자 치료 스토리 & 하이병원 소식 & 언론보도 2열 스플릿 섹션
+ *    - 8) 병원 시설 및 최신 검사장비 6열 갤러리 섹션 (카테고리 필터링 지원)
  * ==============================================================================
  */
 export default function HomePage() {
+  const [selectedFacilityCategory, setSelectedFacilityCategory] = useState("전체");
+
+  const facilityCategories = [
+    "전체",
+    "건강검진센터",
+    "영상진단센터",
+    "도수재활센터",
+    "입원실/간호간병",
+  ];
+
+  // 검사장비 및 시설 카테고리 필터링
+  const filteredFacilities =
+    selectedFacilityCategory === "전체"
+      ? GEM_FACILITIES
+      : GEM_FACILITIES.filter((f) => f.category === selectedFacilityCategory);
+
   return (
-    <div className="Gem_HomePage w-full pb-16">
-      {/* 1. 최상단 히어로 배너 (인터랙티브 7초 캐러셀, 1400px 내부 정렬) */}
+    <div className="Gem_HomePage w-full pb-12 bg-white">
+      {/* 1. 최상단 히어로 배너 (풀배경 엣지투엣지 + 1400px 내부 중앙 정렬) */}
       <Gem_HeroCarousel />
 
-      {/* 2. 플로팅 간편예약 접수 바 (1400px 내부 정렬) */}
+      {/* 2. 원스톱 간편예약 신청 바 (1400px 플로팅 오버랩 카드 + 750px 개인정보 모달) */}
       <Gem_QuickReservationBar />
 
-      {/* 3. 3D 인터랙티브 통증 부위 자가진단기 (인천하이병원 시그니처, 1400px 내부 정렬) */}
+      {/* 3. 인천하이병원 척추·관절·통증 인터랙티브 자가진단기 (1400px 내부 2열 분할) */}
       <Gem_InteractiveBody3D />
 
-      {/* 4. 10인의 전문 의료진 소개 섹션 (바로서구병원 벤치마킹, 1400px 내부 정렬) */}
+      {/* 4. 풍부한 임상경험과 검증된 실력의 의료진 (1400px 내부 4열 카드 + 진료과 필터) */}
       <Gem_DoctorsSpotlight />
 
-      {/* 5. 4대 중점 특화 진료센터 (1400px 내부 정렬) */}
+      {/* 5. 신뢰할 수 있는 임상 경험과 풍부한 수술 실적 (1400px 내부 4대 카운터 지표) */}
+      <Gem_ClinicalMetrics />
+
+      {/* 6. 중점 특화 진료센터 큐레이션 (1400px 내부 4대 특화센터) */}
       <Gem_SpecialtyCenters />
 
-      {/* 6. 환자 치료 스토리 & 언론보도(NEWS) 섹션 (1400px 내부 정렬) */}
-      <section className="Gem_StorySection w-full py-16 md:py-24 bg-white">
+      {/* 7. 환자 치료 스토리 & 하이병원 소식 및 언론보도 2열 스플릿 섹션 (1400px 중앙 정렬) */}
+      <section className="Gem_StoryAndNewsSection w-full bg-[#F0F3FF] py-16 sm:py-20">
         <div className="Gem_Container max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {/* 좌측: 환자 치료 스토리 */}
-            <div className="bg-slate-50 rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold text-[#0052CC] bg-blue-50 px-2.5 py-1 rounded-full">
-                    PATIENT STORIES
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12">
+            {/* 좌측 열: 생생한 환자 치료 스토리 (블로그 스토리) */}
+            <div className="space-y-6 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[#0052CC] text-xs font-bold uppercase tracking-wider block mb-1">
+                    BLOG STORIES
                   </span>
-                  <span className="text-xs text-slate-400 font-medium">유튜브 영상 인터뷰</span>
+                  <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    생생한 환자 치료 스토리
+                  </h3>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
-                  생생한 환자 회복 인터뷰
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500 mb-6 leading-relaxed">
-                  "극심했던 디스크 통증, 수술 없이 걸어서 퇴원했습니다!" 실제 환자분들의 감동적인 회복 스토리를 확인하세요.
-                </p>
+                <Link
+                  href="/community/blog"
+                  className="text-xs sm:text-sm font-bold text-[#0052CC] hover:underline flex items-center gap-1"
+                >
+                  <span>블로그 전체보기</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
 
-                {/* 영상 썸네일 카드 */}
-                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg group cursor-pointer bg-slate-900 mb-4">
+              {/* 환자 치료 후기 카드 */}
+              <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex-1 flex flex-col justify-between border border-slate-200/80 group hover:-translate-y-1">
+                {/* 상단 썸네일 이미지 및 평점 오버레이 */}
+                <div className="relative w-full bg-[#071E54] overflow-hidden min-h-[300px] sm:min-h-[340px]">
                   <img
-                    src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80"
-                    alt="환자 인터뷰 썸네일"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwpp_AWm8PeRte1qe35tMrpkS-vfNJyHsC4Uy8fpCVTOQcUVOdGF0HfQZzjFKhti8_268D1AoeCtTlkwArI36dxEkDc0yIiIxf5CVSuM-YIxU-kcWF8dGWzq-YfqoWR8D8Ei03mo2BbC5cSMJVtYTh6WcQ_ZK32lN--qQjd9yZd6Z7P5H1LtJp5pT5mMtJ3Ewp97ovrMdtaUIHB9_fvoGfa8Q8sNOZghY8oTLc4eGhGpWkPjxlRSqOoA"
+                    alt="환자 치료 후기 사진"
+                    className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-5">
-                    <div className="w-12 h-12 rounded-full bg-red-600 group-hover:bg-red-700 text-white flex items-center justify-center mb-3 shadow-xl transition-transform group-hover:scale-110">
-                      <Play className="w-5 h-5 ml-1 fill-white" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#071E54]/90 via-[#071E54]/30 to-transparent" />
+
+                  {/* 블로그 스토리 뱃지 */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className="bg-[#0052CC]/90 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>블로그 스토리</span>
+                    </span>
+                  </div>
+
+                  {/* 별점 및 평점 표시 */}
+                  <div className="absolute bottom-4 left-6 right-6 flex items-center justify-between text-white z-10">
+                    <div className="flex items-center gap-1 text-amber-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      ))}
+                      <span className="text-white text-xs font-bold ml-1.5">
+                        5.0 (치료 만족도)
+                      </span>
                     </div>
-                    <h4 className="text-white text-base font-bold leading-tight">
-                      [치료후기] 척추관협착증 비수술 신경성형술 2주 후 일상 복귀
-                    </h4>
                   </div>
                 </div>
-              </div>
 
-              <Link
-                href="/community/blog"
-                className="inline-flex items-center text-xs font-bold text-[#0052CC] hover:text-[#0043A6] transition-colors"
-              >
-                <span>치료후기 더 보러가기</span>
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </Link>
+                {/* 하단 텍스트 및 상세 인터뷰 내용 */}
+                <div className="p-6 sm:p-7">
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <span className="bg-[#EBF2FC] text-[#0052CC] text-xs px-2.5 py-0.5 rounded-full font-bold">
+                      허리디스크 비수술
+                    </span>
+                    <span className="text-slate-400 text-xs font-medium">
+                      박OO 환자 (62세)
+                    </span>
+                  </div>
+
+                  <h4 className="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-[#0052CC] transition-colors leading-snug">
+                    "밤마다 잠을 못 이룰 정도로 극심했던 허리통증, 비수술 신경성형술로
+                    말끔히 회복했습니다!"
+                  </h4>
+
+                  <p className="text-xs sm:text-sm text-slate-500 mt-2.5 leading-relaxed break-keep">
+                    여러 병원에서 무조건 수술을 권유받아 걱정이 컸는데,
+                    인천하이병원에서는 정확한 정밀검사 후 비수술 치료를 최우선으로
+                    진행해 주셨습니다. 원장님의 자상한 설명 덕분에 불안감 없이 빠르게
+                    회복했습니다.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* 우측: HI Hospital 언론보도 및 병원소식 */}
-            <div className="bg-slate-50 rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
+            {/* 우측 열: 하이병원 소식 & 언론보도 */}
+            <div className="space-y-6 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[#008B96] text-xs font-bold uppercase tracking-wider block mb-1">
                     HI HOSPITAL NEWS
                   </span>
-                  <Link href="/community/news" className="text-xs text-[#0052CC] font-bold hover:underline">
-                    전체보기
-                  </Link>
+                  <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    하이병원 소식 & 언론보도
+                  </h3>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
-                  병원 소식 & 언론보도
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500 mb-6 leading-relaxed">
-                  각종 공중파 방송 출연, 학술 세미나 발표, 원내 최신 소식을 빠르게 전달해 드립니다.
-                </p>
-
-                {/* 뉴스 리스트 아이템 3개 */}
-                <div className="space-y-3.5 mb-4">
-                  <Link
-                    href="/community/news"
-                    className="p-4 rounded-xl bg-white border border-slate-200/70 hover:border-blue-300 hover:shadow-md transition-all block group"
-                  >
-                    <div className="flex items-center space-x-2 text-[11px] text-slate-400 mb-1">
-                      <Newspaper className="w-3.5 h-3.5 text-[#0052CC]" />
-                      <span>조선일보 메디컬 라이프</span>
-                      <span>•</span>
-                      <span>2026.09.01</span>
-                    </div>
-                    <h4 className="text-sm font-bold text-slate-800 group-hover:text-[#0052CC] transition-colors line-clamp-1">
-                      김진수 대표원장, 최소절개 인공관절 수술 3,000례 달성 기념 학술발표
-                    </h4>
-                  </Link>
-
-                  <Link
-                    href="/community/news"
-                    className="p-4 rounded-xl bg-white border border-slate-200/70 hover:border-blue-300 hover:shadow-md transition-all block group"
-                  >
-                    <div className="flex items-center space-x-2 text-[11px] text-slate-400 mb-1">
-                      <Award className="w-3.5 h-3.5 text-amber-500" />
-                      <span>원내 주요 공지</span>
-                      <span>•</span>
-                      <span>2026.08.28</span>
-                    </div>
-                    <h4 className="text-sm font-bold text-slate-800 group-hover:text-[#0052CC] transition-colors line-clamp-1">
-                      최신 독일 지멘스사 3.0T MRI 정밀 영상진단 장비 추가 도입 안내
-                    </h4>
-                  </Link>
-
-                  <Link
-                    href="/community/news"
-                    className="p-4 rounded-xl bg-white border border-slate-200/70 hover:border-blue-300 hover:shadow-md transition-all block group"
-                  >
-                    <div className="flex items-center space-x-2 text-[11px] text-slate-400 mb-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                      <span>보건복지부 인증</span>
-                      <span>•</span>
-                      <span>2026.08.15</span>
-                    </div>
-                    <h4 className="text-sm font-bold text-slate-800 group-hover:text-[#0052CC] transition-colors line-clamp-1">
-                      보건복지부 4주기 의료기관 인증 획득 (환자 안전 및 감염관리 우수)
-                    </h4>
-                  </Link>
-                </div>
+                <Link
+                  href="/community/news"
+                  className="text-xs sm:text-sm font-bold text-[#008B96] hover:underline flex items-center gap-1"
+                >
+                  <span>소식 더보기</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
               </div>
 
-              <Link
-                href="/community/news"
-                className="inline-flex items-center text-xs font-bold text-[#0052CC] hover:text-[#0043A6] transition-colors"
-              >
-                <span>언론보도 더 보러가기</span>
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </Link>
+              {/* 4개 뉴스 아이템 리스트 */}
+              <div className="space-y-3.5">
+                {GEM_NEWS_ITEMS.map((news) => (
+                  <Link
+                    key={news.id}
+                    href={news.link}
+                    className="block bg-white p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-[#0052CC]/40 border border-slate-200/80 transition-all group hover:-translate-y-0.5"
+                  >
+                    <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                      <span className={`px-2 py-0.5 rounded font-bold text-[11px] ${news.tagBg}`}>
+                        {news.tag}
+                      </span>
+                      <span className="font-mono text-slate-400">{news.date}</span>
+                    </div>
+
+                    <h4 className="text-sm sm:text-[15px] font-bold text-slate-900 group-hover:text-[#0052CC] transition-colors line-clamp-1">
+                      {news.title}
+                    </h4>
+
+                    <p className="text-xs text-slate-500 mt-1 line-clamp-1 leading-relaxed">
+                      {news.desc}
+                    </p>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 7. 최첨단 시설 및 장비 둘러보기 (1400px 내부 정렬) */}
-      <section className="Gem_FacilitySection w-full py-16 bg-slate-50 border-t border-slate-100">
+      {/* 8. 병원 시설 및 최신 검사장비 6열 갤러리 섹션 (1400px 중앙 정렬) */}
+      <section className="Gem_FacilitySection w-full py-16 sm:py-20 bg-white" id="facility-tour">
         <div className="Gem_Container max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-xs font-bold text-[#0052CC] uppercase tracking-wider block mb-1">
-              ADVANCED MEDICAL INFRASTRUCTURE
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-800">
-              최첨단 의료시설 및 정밀 검사장비
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-2">
-              대학병원급 청정 무균 수술실과 고해상도 영상장비로 안전하고 쾌적한 의료 환경을 제공합니다.
-            </p>
+          {/* 상단 섹션 헤더 및 카테고리 필터 */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+            <div>
+              <span className="inline-block bg-[#EBF2FC] text-[#0052CC] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+                STATE-OF-THE-ART EQUIPMENT
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+                병원 시설 및 최신 검사장비
+              </h2>
+              <p className="text-xs sm:text-sm md:text-base text-slate-500 mt-1.5">
+                건강검진센터와 초정밀 영상 장비를 비롯한 최신 검사·치료 시설을 갖추고
+                있습니다.
+              </p>
+            </div>
+
+            {/* 필터 탭 버튼 */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+              {facilityCategories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedFacilityCategory(cat)}
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    selectedFacilityCategory === cat
+                      ? "bg-[#0052CC] text-white shadow-md scale-105"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-600"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* 시설 갤러리 6열 그리드 */}
+          {/* 6열 컴팩트 시설 카드 그리드 (1400px 내부) */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[
-              { title: "3.0T 고해상도 MRI", tag: "정밀영상", img: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=400&q=80" },
-              { title: "128채널 MDCT", tag: "당일판독", img: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=400&q=80" },
-              { title: "청정 무균 수술실", tag: "감염0%", img: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=400&q=80" },
-              { title: "1:1 감압 도수치료실", tag: "재활센터", img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=400&q=80" },
-              { title: "인공신장실 투석센터", tag: "독립음압", img: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80" },
-              { title: "쾌적한 호텔식 입원실", tag: "간호간병", img: "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&w=400&q=80" },
-            ].map((facility, idx) => (
+            {filteredFacilities.map((fac) => (
               <div
-                key={idx}
-                className="Gem_Card overflow-hidden rounded-2xl border border-slate-200 bg-white group cursor-pointer shadow-sm hover:shadow-md"
+                key={fac.id}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200/80 group hover:-translate-y-1"
               >
-                <div className="aspect-[4/3] overflow-hidden bg-slate-100 relative">
+                {/* 사진 썸네일 */}
+                <div className="aspect-square bg-slate-100 relative overflow-hidden">
                   <img
-                    src={facility.img}
-                    alt={facility.title}
+                    src={fac.imageUrl}
+                    alt={fac.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <span className="absolute top-2 left-2 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
-                    {facility.tag}
+                  {/* 사진 좌하단 뱃지 */}
+                  <span className="absolute bottom-2 left-2 bg-[#071E54]/85 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded font-bold">
+                    {fac.tag}
                   </span>
                 </div>
-                <div className="p-3 text-center">
-                  <h4 className="text-xs font-bold text-slate-800 group-hover:text-[#0052CC] transition-colors truncate">
-                    {facility.title}
+
+                {/* 하단 텍스트 정보 */}
+                <div className="p-3.5">
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate group-hover:text-[#0052CC] transition-colors">
+                    {fac.name}
                   </h4>
+                  <p className="text-[11px] text-slate-400 mt-1 truncate">
+                    {fac.desc}
+                  </p>
                 </div>
               </div>
             ))}

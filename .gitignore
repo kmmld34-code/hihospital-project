@@ -81,6 +81,8 @@ htmlcov/
 *.crt
 credentials.json
 secrets.json
+*password*.txt
+자료폴더/password.txt
 
 # ------------------------------------------------------------------------------
 # 5. 운영체제 및 IDE 설정 파일

@@ -3,19 +3,26 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { GEM_HERO_SLIDES, GemSlideItem } from "@/data/hospitalData";
-import { ChevronLeft, ChevronRight, Pause, Play, ArrowRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, Eye } from "lucide-react";
 
 /**
  * ==============================================================================
- * [Gem_HeroCarousel] 최상단 인터랙티브 캐러셀 슬라이더
+ * [Gem_HeroCarousel] 최상단 인터랙티브 엣지투엣지 캐러셀 배너 컴포넌트
  * ==============================================================================
- * - 규칙: 1400px 컨테이너 내부 중앙 정렬 (max-w-[1400px] mx-auto)
- * - 인터랙션 스펙:
- *   1) 7초(7,000ms) 주기 우에서 좌 자동 슬라이딩
- *   2) 마우스 오버 시 일시 정지(isPaused = true)
- *   3) 마우스 아웃 시 자동 재생 재개(isPaused = false)
- *   4) 슬라이드 전체 및 내부 CTA 버튼 클릭 시 해당 링크 이동
- * - 접두어: Gem_ 접두사 엄수
+ * 작성자: 고윤기 대리 (Frontend Lead Engineer)
+ * 기획 및 디자인 감수: 강수진 PM
+ * ==============================================================================
+ * [주요 구현 사양]
+ * 1. 엣지투엣지(Full-width) 배경:
+ *    - 화면 전체를 아우르는 딥네이비(#071E54) 배경 및 하이테크 수술실 배경 이미지
+ *    - 다채로운 그라데이션 오버레이로 텍스트 가독성 확보
+ * 2. 내부 1400px 중앙 정렬 컨테이너:
+ *    - 모든 카테고리 뱃지, 헤드라인, 액션 버튼, 슬라이드 게이지는 max-w-[1400px] mx-auto 엄수
+ * 3. 사용자 인터랙션:
+ *    - 7초(7,000ms) 주기 우에서 좌로 자동 슬라이딩
+ *    - 마우스 오버(Hover) 시 슬라이더 자동 회전 일시 정지(Pause)
+ *    - 좌우 큼직한 원형 백드롭 블러 네비게이션 버튼 제공
+ *    - 하단 진행 게이지 바 실시간 동기화 (01 ~ 04)
  * ==============================================================================
  */
 export default function Gem_HeroCarousel() {
@@ -28,23 +35,17 @@ export default function Gem_HeroCarousel() {
   const SLIDE_DURATION = 7000; // 7초 주기
   const totalSlides = GEM_HERO_SLIDES.length;
 
-  // 다음 슬라이드로 이동
+  // 다음 슬라이드로 이동 함수
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % totalSlides);
     setProgress(0);
   }, [totalSlides]);
 
-  // 이전 슬라이드로 이동
+  // 이전 슬라이드로 이동 함수
   const prevSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
     setProgress(0);
   }, [totalSlides]);
-
-  // 특정 슬라이드 번호로 점프
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-    setProgress(0);
-  };
 
   // 7초 자동 롤링 및 일시정지 처리 이펙트
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function Gem_HeroCarousel() {
       return;
     }
 
-    // 슬라이드 전환 타이머
+    // 7초 슬라이드 전환 타이머
     timerRef.current = setInterval(() => {
       nextSlide();
     }, SLIDE_DURATION);
@@ -74,138 +75,147 @@ export default function Gem_HeroCarousel() {
     };
   }, [isPaused, nextSlide]);
 
+  const currentSlide: GemSlideItem = GEM_HERO_SLIDES[currentIndex];
+
   return (
-    <section className="Gem_HeroSection w-full py-4 md:py-6">
-      <div className="Gem_Container max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 메인 캐러셀 뷰포트 (마우스 오버 시 일시 정지) */}
-        <div
-          className="Gem_HeroSlider relative w-full h-[480px] sm:h-[540px] md:h-[600px] lg:h-[640px] rounded-3xl overflow-hidden shadow-2xl bg-slate-900 group select-none"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
+    <section
+      className="Gem_HeroCarousel w-full pb-4 select-none relative overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* 1. Full-width 엣지투엣지 배너 컨테이너 (최소 높이 600px ~ 620px) */}
+      <div className="w-full relative bg-[#071E54] overflow-hidden min-h-[580px] sm:min-h-[620px] flex items-center">
+        {/* 슬라이드별 배경 이미지 및 그라데이션 레이어 */}
+        {GEM_HERO_SLIDES.map((slide, index) => {
+          const isActive = index === currentIndex;
+          return (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${
+                isActive ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+            >
+              {/* 배경 고화질 메디컬 이미지 */}
+              <img
+                src={slide.backgroundImage}
+                alt={slide.headline}
+                className="w-full h-full object-cover object-center opacity-40 mix-blend-luminosity transform scale-105 transition-transform duration-7000"
+              />
+              {/* 좌측 텍스트 영역을 어둡게 밝혀주는 딥네이비 선형 그라데이션 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#071E54] via-[#071E54]/85 to-transparent" />
+              {/* 비네팅 방사형 그림자 효과 */}
+              <div className="absolute inset-0 bg-radial from-transparent via-transparent to-black/60" />
+            </div>
+          );
+        })}
+
+        {/* 2. 큼직한 좌우 네비게이션 화살표 버튼 (배경 블러 처리, 양쪽 끝 배치) */}
+        <button
+          type="button"
+          onClick={prevSlide}
+          aria-label="이전 슬라이드"
+          className="absolute left-3 sm:left-6 md:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-md flex items-center justify-center transition-all shadow-2xl cursor-pointer hover:scale-105"
         >
-          {/* 슬라이드 4개 렌더링 (우에서 좌로 전환되는 슬라이더) */}
-          <div className="relative w-full h-full">
-            {GEM_HERO_SLIDES.map((slide: GemSlideItem, index: number) => {
-              const isActive = index === currentIndex;
+          <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8" />
+        </button>
 
-              return (
-                <div
-                  key={slide.id}
-                  className={`Gem_Slide absolute inset-0 w-full h-full transition-all duration-700 ease-in-out ${
-                    isActive
-                      ? "opacity-100 translate-x-0 z-10 pointer-events-auto"
-                      : "opacity-0 translate-x-full z-0 pointer-events-none"
-                  }`}
-                >
-                  {/* 배경 이미지 및 다크 오버레이 */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transform scale-105 transition-transform duration-[7000ms]"
-                    style={{
-                      backgroundImage: `url(${slide.backgroundImage})`,
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/60 to-transparent" />
-                  </div>
+        <button
+          type="button"
+          onClick={nextSlide}
+          aria-label="다음 슬라이드"
+          className="absolute right-3 sm:right-6 md:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-md flex items-center justify-center transition-all shadow-2xl cursor-pointer hover:scale-105"
+        >
+          <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8" />
+        </button>
 
-                  {/* 슬라이드 내부 텍스트 콘텐츠 및 CTA 버튼 (클릭 가능) */}
-                  <div className="relative z-20 h-full flex flex-col justify-center px-8 sm:px-12 md:px-16 lg:px-20 max-w-3xl">
-                    {/* 상단 뱃지 */}
-                    <div className="inline-flex items-center space-x-2 bg-white/15 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-full w-fit mb-4 sm:mb-6">
-                      <Sparkles className="w-4 h-4 text-amber-400" />
-                      <span>{slide.badge}</span>
-                    </div>
-
-                    {/* 메인 헤드라인 (텍스트 자체 클릭 가능) */}
-                    <Link
-                      href={slide.ctaLink}
-                      className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight sm:leading-snug mb-4 sm:mb-6 hover:text-blue-200 transition-colors whitespace-pre-line"
-                    >
-                      {slide.headline}
-                    </Link>
-
-                    {/* 서브 설명 문구 */}
-                    <p className="text-sm sm:text-base md:text-lg text-slate-300 mb-8 max-w-xl font-normal leading-relaxed">
-                      {slide.subheadline}
-                    </p>
-
-                    {/* CTA 버튼 링크 */}
-                    <div className="flex items-center space-x-4">
-                      <Link
-                        href={slide.ctaLink}
-                        className="Gem_HeroCtaBtn inline-flex items-center justify-center bg-[#0052CC] hover:bg-[#0043A6] text-white text-sm sm:text-base font-bold px-7 py-3.5 rounded-full shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-0.5 group/btn"
-                      >
-                        <span>{slide.ctaText}</span>
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                      </Link>
-
-                      <Link
-                        href="/about/doctors"
-                        className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 text-sm sm:text-base font-semibold px-6 py-3.5 rounded-full transition-all"
-                      >
-                        진료시간표 보기
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+        {/* 3. 1400px 중앙 정렬 메인 콘텐츠 영역 */}
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 flex flex-col justify-between min-h-[560px]">
+          {/* 상단 뱃지 그룹 */}
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 bg-[#0052CC]/40 backdrop-blur-md text-[#C4D2FF] px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold border border-white/10">
+              <span className="w-2 h-2 rounded-full bg-[#87F3FF] animate-pulse" />
+              {currentSlide.badge1}
+            </span>
+            <span className="inline-flex items-center text-[#87F3FF] text-xs sm:text-sm font-bold">
+              {currentSlide.badge2}
+            </span>
           </div>
 
-          {/* 좌우 내비게이션 화살표 컨트롤러 */}
-          <button
-            onClick={prevSlide}
-            aria-label="이전 슬라이드"
-            className="Gem_SlidePrevBtn absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/30 hover:bg-[#0052CC] text-white flex items-center justify-center backdrop-blur-md transition-all border border-white/10 opacity-75 hover:opacity-100"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button
-            onClick={nextSlide}
-            aria-label="다음 슬라이드"
-            className="Gem_SlideNextBtn absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/30 hover:bg-[#0052CC] text-white flex items-center justify-center backdrop-blur-md transition-all border border-white/10 opacity-75 hover:opacity-100"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+          {/* 중앙 메인 타이틀 및 서브 카피 */}
+          <div className="space-y-4 my-auto max-w-3xl py-6">
+            <h1 className="text-white font-extrabold tracking-tight break-keep text-3xl sm:text-4xl md:text-5xl lg:text-[52px] leading-[1.25]">
+              {currentSlide.headline.split("\n").map((line, idx) => (
+                <span key={idx} className="block">
+                  {line}
+                </span>
+              ))}
+            </h1>
 
-          {/* 하단 인디케이터 및 진행 바 게이지 */}
-          <div className="absolute bottom-6 sm:bottom-8 left-8 sm:left-16 z-30 flex items-center space-x-4 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-            {/* 페이지 번호 (예: 01 / 04) */}
-            <span className="text-xs font-mono font-bold text-white">
-              0{currentIndex + 1} <span className="text-slate-500">/ 0{totalSlides}</span>
-            </span>
-
-            {/* 게이지 바 */}
-            <div className="w-20 sm:w-28 h-1.5 bg-white/20 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#0052CC] transition-all duration-100 rounded-full"
-                style={{ width: `${progress}%` }}
-              />
+            <div className="text-slate-200 text-sm sm:text-base md:text-lg leading-relaxed break-keep font-normal">
+              <p>{currentSlide.subheadline}</p>
+              {currentSlide.highlightText && (
+                <p className="text-[#87F3FF] font-semibold mt-1">
+                  {currentSlide.highlightText}
+                </p>
+              )}
             </div>
 
-            {/* 개별 슬라이드 도트 */}
-            <div className="flex space-x-1.5">
-              {GEM_HERO_SLIDES.map((_, dotIdx) => (
+            {/* 메인 액션 버튼 그룹 */}
+            <div className="flex flex-wrap items-center gap-4 pt-4">
+              <Link
+                href={currentSlide.ctaLink}
+                className="bg-[#0052CC] hover:bg-[#0043A6] text-white font-bold text-sm sm:text-base px-6 sm:px-7 py-3.5 rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center gap-2 hover:shadow-xl"
+              >
+                <span>{currentSlide.ctaText}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+
+              <a
+                href="#facility-tour"
+                className="bg-white/15 hover:bg-white/25 text-white backdrop-blur-md font-bold text-sm sm:text-base px-6 py-3.5 rounded-xl transition-all flex items-center gap-2"
+              >
+                <Eye className="w-4 h-4 text-[#87F3FF]" />
+                <span>자세히 보기</span>
+              </a>
+            </div>
+          </div>
+
+          {/* 하단 인디케이터 바 (01 --- 04 진행률 표시) */}
+          <div className="flex items-center justify-between pt-4 border-t border-white/10">
+            <div className="flex items-center gap-4 text-white">
+              <span className="font-extrabold tracking-widest text-[#87F3FF] text-sm sm:text-base">
+                {currentSlide.order}
+              </span>
+              <div className="w-28 sm:w-36 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#87F3FF] rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <span className="text-slate-400 font-bold tracking-widest text-sm sm:text-base">
+                {currentSlide.totalSlides}
+              </span>
+            </div>
+
+            {/* 슬라이드 썸네일 네비게이션 점(Dot) */}
+            <div className="flex items-center gap-2">
+              {GEM_HERO_SLIDES.map((_, idx) => (
                 <button
-                  key={dotIdx}
-                  onClick={() => goToSlide(dotIdx)}
-                  aria-label={`슬라이드 ${dotIdx + 1}번으로 이동`}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    dotIdx === currentIndex
-                      ? "w-5 bg-white"
-                      : "bg-white/40 hover:bg-white/70"
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setCurrentIndex(idx);
+                    setProgress(0);
+                  }}
+                  aria-label={`슬라이드 ${idx + 1}번으로 이동`}
+                  className={`h-2 rounded-full transition-all ${
+                    idx === currentIndex
+                      ? "w-8 bg-[#87F3FF]"
+                      : "w-2 bg-white/30 hover:bg-white/60"
                   }`}
                 />
               ))}
             </div>
-
-            {/* 재생 / 일시정지 토글 버튼 */}
-            <button
-              onClick={() => setIsPaused(!isPaused)}
-              aria-label={isPaused ? "자동 재생 재개" : "일시 정지"}
-              className="text-white hover:text-blue-300 transition-colors p-1"
-            >
-              {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
-            </button>
           </div>
         </div>
       </div>
