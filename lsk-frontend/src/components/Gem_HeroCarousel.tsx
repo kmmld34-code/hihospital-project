@@ -176,8 +176,8 @@ export default function Gem_HeroCarousel() {
 
                 {/* 중앙 메인 타이틀 및 서브 카피 */}
                 <div className="space-y-4 my-auto max-w-3xl py-6">
-                  {/* 메인 카피라잇 텍스트: 가독성을 위해 문장 구절(라인) 간격을 정확히 18px로 조정 */}
-                  <h1 className="text-white font-extrabold tracking-tight break-keep text-3xl sm:text-4xl md:text-5xl lg:text-[52px] flex flex-col gap-[18px]">
+                  {/* 메인 카피라잇 텍스트: 문장 구절(라인) 간격을 최적의 시각적 밸런스 8px(gap-2)로 정밀 조정 */}
+                  <h1 className="text-white font-extrabold tracking-tight break-keep text-3xl sm:text-4xl md:text-5xl lg:text-[52px] flex flex-col gap-2">
                     {slide.headline.split("\n").map((line, lIdx) => (
                       <span key={lIdx} className="block leading-[1.25]">
                         {line}
