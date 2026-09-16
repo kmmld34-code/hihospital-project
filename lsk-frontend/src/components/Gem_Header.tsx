@@ -115,14 +115,14 @@ export default function Gem_Header() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="질환명이나 진료과를 검색해 보세요"
-                className="w-full h-7 pl-8 pr-3 bg-white border border-slate-200 hover:border-slate-300 focus:border-[#0052CC] rounded-full text-xs text-slate-700 placeholder-slate-400 outline-none transition-all shadow-[0_1px_2px_rgba(0,0,0,0.03)] focus:ring-2 focus:ring-[#0052CC]/15"
+                className="w-full h-7 pl-8 pr-3 bg-white border border-[#6E28E0]/40 hover:border-[#6E28E0] focus:border-[#6E28E0] rounded-full text-xs text-[#6E28E0] placeholder-[#6E28E0]/70 font-medium outline-none transition-all shadow-[0_1px_3px_rgba(110,40,224,0.08)] focus:ring-2 focus:ring-[#6E28E0]/20"
               />
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 text-[#6E28E0] absolute left-2.5 pointer-events-none" />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-2 text-[#6E28E0]/60 hover:text-[#6E28E0]"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -288,7 +288,7 @@ export default function Gem_Header() {
                             {item.columns.map((col, idx) => (
                               <div key={idx} className="space-y-2.5">
                                 {col.title && (
-                                  <div className="text-[12px] font-extrabold text-slate-400 tracking-wider uppercase pb-1.5 border-b border-slate-100 flex items-center justify-between">
+                                  <div className="text-[14px] font-bold text-[#0052CC] pb-1.5 border-b border-slate-200 flex items-center justify-between">
                                     <span>{col.title}</span>
                                   </div>
                                 )}
@@ -332,8 +332,8 @@ export default function Gem_Header() {
                           {item.curation && (
                             <div className="w-[210px] bg-gradient-to-br from-[#F4F8FF] to-[#EBF3FF] border border-[#D6E6FF] rounded-xl p-4 flex flex-col justify-between flex-shrink-0">
                               <div>
-                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#0052CC] mb-2">
-                                  <Sparkles className="w-3.5 h-3.5" />
+                                <div className="flex items-center gap-1.5 text-[13.5px] font-bold text-[#0052CC] mb-2">
+                                  <Sparkles className="w-4 h-4" />
                                   <span>{item.curation.badge || "특화 안내"}</span>
                                 </div>
                                 <h4 className="text-[14px] font-black text-slate-900 leading-snug mb-1.5">
@@ -448,14 +448,14 @@ export default function Gem_Header() {
                       <ChevronRight className="w-3.5 h-3.5 text-blue-200 flex-shrink-0" />
                     </Link>
 
-                    {/* 세부 질환 링크: text-[13.5px]~[14px] 100% 선명한 화이트 font-bold */}
+                    {/* 세부 질환 링크: text-[13.5px]~[14px] font-medium (500) */}
                     <ul className="space-y-0.5">
                       {nav.items.map((subItem) => (
                         <li key={subItem.name}>
                           <Link
                             href={subItem.href}
                             onClick={() => setIsMegaDrawerOpen(false)}
-                            className="text-[13px] sm:text-[13.5px] 2xl:text-[14px] text-white hover:text-amber-300 font-bold transition-all block py-[1.5px] hover:translate-x-1 truncate"
+                            className="text-[13px] sm:text-[13.5px] 2xl:text-[14px] text-white hover:text-amber-300 font-medium transition-all block py-[1.5px] hover:translate-x-1 truncate"
                           >
                             • {subItem.name}
                           </Link>
