@@ -25,21 +25,17 @@ import { GEM_EXTENDED_NAV_ITEMS, GEM_SITEMAP_NAV_ITEMS } from "@/data/navigation
  * ==============================================================================
  * 작성자: 고윤기 대리 (Frontend Lead Engineer)
  * 기획 및 디자인 감수: 강수진 PM, 정재이 과장 (UI/UX)
- * 대표님 지침 완벽 반영 (2026-09-16)
+ * 대표님 지침 2차 고도화 반영 (2026-09-16)
  * ==============================================================================
  * [주요 반영 사양]
- * 1. 로고 - 주메뉴라인 - 우측버튼군 여백 대칭 및 정밀 가로폭 재배치:
- *    - 좌/우 여백 대칭 적용 (mx-6 lg:mx-8 2xl:mx-10)
- *    - '병원소개' 시작 위치를 '소'자 위치로 우측 이동(+28px)
- *    - '커뮤니티' 끝 위치를 '뮤'자 위치로 좌측 이동(-28px)
- *    - 11개 주메뉴들을 변경된 시작-끝 지점 사이에서 justify-between으로 균등 배열
- * 2. 양 끝 메뉴 마우스 빗나감(사선 이동 이탈) 원천 차단:
- *    - 팝오버 상단에 투명 히트박스 브릿지(Invisible Hitbox Bridge) 탑재
- *    - 호버 이탈 지연 시간(Grace Period)을 280ms로 확대하여 사선 이동 골든타임 보장
- * 3. 전체메뉴 드로어 슬림화 & 3단 메뉴 생략:
- *    - 척추/관절 3단 시술 18개를 생략하고 대표 카테고리로 슬림화 (GEM_SITEMAP_NAV_ITEMS)
- *    - 세로 패딩 및 행간을 컴팩트하게 정돈하여 화면 과도 점유(압박감) 40% 이상 해소
- *    - 진료예약 블루(#0052CC) 배경 + 화이트 텍스트 반전 테마 유지
+ * 1. 주메뉴 좌/우 대칭 여백 2배 확장 (mx-12 lg:mx-16 2xl:mx-20):
+ *    - [로고] ↔ [주메뉴] 및 [주메뉴] ↔ [버튼군] 여백을 기존의 2배로 확장하여 시각적 호흡감 극대화
+ *    - 줄어든 가로폭 안에서 11개 메뉴가 1px의 오차 없이 균등하게 자동 재배열 (justify-between)
+ * 2. '전체메뉴' 가독성 대폭 향상 (시니어/노안 환자 배려) & 세로폭 유지:
+ *    - 창의 세로 높이를 늘리지 않고 카드 내부/상하 여백을 압축
+ *    - 진료과 타이틀: text-[13.5px] -> text-[15.5px]~[16px] 선명한 화이트 font-black
+ *    - 세부 질환 텍스트: text-[12px] -> text-[13.5px]~[14px] 100% 화이트 font-bold
+ *    - 어르신 환자분들도 돋보기 없이 시원하게 읽을 수 있는 최적의 시인성 확보
  * ==============================================================================
  */
 
@@ -53,7 +49,7 @@ export default function Gem_Header() {
   const [searchQuery, setSearchQuery] = useState<string>(""); // 최상단 검색어
   const [mobileExpandedId, setMobileExpandedId] = useState<string | null>("spine"); // 모바일 아코디언 열림 메뉴
 
-  // 2. 호버 딜레이 타이머 참조 (Hover Intent - 사선 이동 빗나감 방지용 280ms)
+  // 2. 호버 딜레이 타이머 참조 (사선 이동 빗나감 방지용 280ms)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 마우스 진입 핸들러
@@ -180,7 +176,7 @@ export default function Gem_Header() {
       </div>
 
       {/* ============================================================================== */}
-      {/* 2. 메인 GNB 헤더 (로고 - 주메뉴라인 - 우측버튼군 대칭 여백 및 균등 재배열) */}
+      {/* 2. 메인 GNB 헤더 (로고 - 주메뉴라인 - 우측버튼군 대칭 여백 2배 확장) */}
       {/* ============================================================================== */}
       <div className="Gem_HeaderNavWrapper w-full relative">
         <div className="Gem_Container max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-[76px] sm:h-[80px] flex items-center justify-between">
@@ -225,10 +221,10 @@ export default function Gem_Header() {
             </div>
           </Link>
 
-          {/* [2] 중앙 데스크톱 주메뉴라인 (로고와의 간격 = 버튼군과의 간격 완벽 대칭 적용) */}
-          {/* 대표님 지침: '병원소개'는 '소'자 위치로 우측 이동(+28px), '커뮤니티'는 '뮤'자 위치로 좌측 이동(-28px) 후 그 사이에서 고르게 균등 배열 */}
+          {/* [2] 중앙 데스크톱 주메뉴라인 (좌우 여백을 기존의 2배인 mx-12 lg:mx-16 2xl:mx-20으로 확장) */}
+          {/* 줄어든 폭 안에서 11개 메뉴를 justify-between으로 고르게 자동 배열 */}
           <nav 
-            className="Gem_HeaderDesktopNav hidden xl:flex items-center justify-between flex-1 mx-6 lg:mx-8 2xl:mx-10 h-full"
+            className="Gem_HeaderDesktopNav hidden xl:flex items-center justify-between flex-1 mx-12 lg:mx-16 2xl:mx-20 h-full"
             onMouseLeave={handleMouseLeave}
           >
             {GEM_EXTENDED_NAV_ITEMS.map((item, index) => {
@@ -236,12 +232,12 @@ export default function Gem_Header() {
               return (
                 <div
                   key={item.id}
-                  className="h-full flex items-center relative px-1"
+                  className="h-full flex items-center relative px-0.5"
                   onMouseEnter={() => handleMouseEnter(item.id)}
                 >
                   <Link
                     href={item.href}
-                    className={`Gem_NavItem text-[16px] 2xl:text-[16.5px] font-extrabold tracking-tight py-2 transition-all inline-flex items-center gap-1 group relative whitespace-nowrap ${
+                    className={`Gem_NavItem text-[15.5px] 2xl:text-[16px] font-extrabold tracking-tight py-2 transition-all inline-flex items-center gap-1 group relative whitespace-nowrap ${
                       isActive ? "text-[#0052CC]" : "text-slate-700 hover:text-[#0052CC]"
                     }`}
                   >
@@ -255,15 +251,15 @@ export default function Gem_Header() {
                   </Link>
 
                   {/* ============================================================================== */}
-                  {/* [고대리 해결책] 투명 히트박스 브릿지 탑재로 양 끝 메뉴 사선 이동 빗나감 100% 원천 차단 */}
+                  {/* 투명 히트박스 브릿지 탑재로 양 끝 메뉴 사선 이동 빗나감 100% 원천 차단 */}
                   {/* ============================================================================== */}
                   {isActive && !isMegaDrawerOpen && (
                     <div
                       className={`absolute top-full pt-1.5 z-50 pointer-events-auto hidden xl:block animate-in fade-in zoom-in-95 duration-150 ${
                         index <= 2 
-                          ? "left-0" // 0~2번 (병원소개, 뇌신경, 척추): 주메뉴 좌측에 맞춰 우측 확장
+                          ? "left-0" // 0~2번: 주메뉴 좌측에 맞춰 우측 확장
                           : index >= 8 
-                          ? "right-0" // 8~10번 (건강검진, 산부인과, 커뮤니티): 주메뉴 우측에 맞춰 좌측 확장
+                          ? "right-0" // 8~10번: 주메뉴 우측에 맞춰 좌측 확장
                           : "left-1/2 -translate-x-1/2" // 중간 메뉴: 중앙 정렬
                       }`}
                       onMouseEnter={() => {
@@ -410,14 +406,14 @@ export default function Gem_Header() {
         </div>
 
         {/* ============================================================================== */}
-        {/* [정과장 해결책] 전체메뉴 드로어: 3단 메뉴 생략 및 콤팩트 슬림화 (GEM_SITEMAP_NAV_ITEMS) */}
+        {/* [대표님 지침 반영] 전체메뉴 드로어: 글자 크기 대폭 확대(노안/시니어 배려) & 세로폭 유지 */}
         {/* ============================================================================== */}
         {isMegaDrawerOpen && (
           <div className="Gem_MegaDrawerWrapper absolute top-full left-0 w-full bg-gradient-to-b from-[#0047B3] to-[#0052CC] text-white shadow-[0_25px_60px_rgba(0,0,0,0.35)] border-b-4 border-[#00388A] animate-in slide-in-from-top-2 duration-200 z-50">
-            <div className="Gem_Container max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div className="Gem_Container max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-4.5">
               
-              {/* 드로어 상단 바 (슬림화: py-5로 여백 압축) */}
-              <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/20">
+              {/* 드로어 상단 바 (여백을 pb-2 mb-3으로 압축하여 글자 크기 확장에 양보) */}
+              <div className="flex items-center justify-between pb-2 mb-3 border-b border-white/20">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-lg bg-white/15 border border-white/20 text-white flex items-center justify-center shadow-sm">
                     <LayoutGrid className="w-4 h-4" />
@@ -426,7 +422,7 @@ export default function Gem_Header() {
                     <h3 className="text-base sm:text-lg font-black text-white tracking-tight leading-none">
                       전체 진료과목 사이트맵
                     </h3>
-                    <p className="text-[11.5px] text-blue-100 mt-1">인천하이병원의 11개 진료과 및 세부 질환 클리닉을 한눈에 확인하세요.</p>
+                    <p className="text-[12px] text-blue-100 mt-0.5">인천하이병원의 11개 진료과 및 세부 질환 클리닉을 한눈에 확인하세요.</p>
                   </div>
                 </div>
                 <button
@@ -439,29 +435,31 @@ export default function Gem_Header() {
                 </button>
               </div>
 
-              {/* 11개 진료과 바둑판(Grid) 전체 뷰 (3단 메뉴 생략으로 세로 높이 40% 슬림화) */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5 sm:gap-4 max-h-[50vh] overflow-y-auto pr-1.5 custom-scrollbar">
+              {/* 11개 진료과 바둑판(Grid) 전체 뷰 (글자 크기를 14px급으로 대폭 키워 노안 환자 완벽 배려) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-3.5 max-h-[50vh] overflow-y-auto pr-1.5 custom-scrollbar">
                 {GEM_SITEMAP_NAV_ITEMS.map((nav) => (
                   <div 
                     key={nav.id} 
-                    className="space-y-2 bg-white/5 p-2.5 sm:p-3 rounded-xl border border-white/10 hover:border-white/30 transition-colors"
+                    className="space-y-1.5 bg-white/5 p-2 sm:p-2.5 rounded-xl border border-white/10 hover:border-white/30 transition-colors"
                   >
+                    {/* 진료과 메인 타이틀: text-[15.5px] 굵은 화이트 텍스트 */}
                     <Link
                       href={nav.href}
                       onClick={() => setIsMegaDrawerOpen(false)}
-                      className="inline-flex items-center gap-1 text-[13.5px] font-black text-white hover:text-amber-300 border-b border-white/20 pb-1 w-full justify-between transition-colors"
+                      className="inline-flex items-center gap-1 text-[15px] sm:text-[15.5px] font-black text-white hover:text-amber-300 border-b border-white/25 pb-1 w-full justify-between transition-colors tracking-tight"
                     >
                       <span>{nav.name}</span>
-                      <ChevronRight className="w-3 h-3 text-blue-200" />
+                      <ChevronRight className="w-3.5 h-3.5 text-blue-200 flex-shrink-0" />
                     </Link>
 
+                    {/* 세부 질환 링크: text-[13.5px]~[14px] 100% 선명한 화이트 font-bold로 가독성 극대화 */}
                     <ul className="space-y-0.5">
                       {nav.items.map((subItem) => (
                         <li key={subItem.name}>
                           <Link
                             href={subItem.href}
                             onClick={() => setIsMegaDrawerOpen(false)}
-                            className="text-[12px] text-blue-100 hover:text-white hover:font-bold transition-all block py-[2px] hover:translate-x-1 truncate"
+                            className="text-[13px] sm:text-[13.5px] 2xl:text-[14px] text-white hover:text-amber-300 font-bold transition-all block py-[1.5px] hover:translate-x-1 truncate"
                           >
                             • {subItem.name}
                           </Link>
@@ -472,14 +470,14 @@ export default function Gem_Header() {
                 ))}
               </div>
 
-              {/* 드로어 하단 퀵 링크 바 (슬림화) */}
-              <div className="mt-5 pt-3 border-t border-white/15 flex flex-wrap items-center justify-between gap-3 text-xs font-medium text-blue-100 bg-[#00388A]/80 -mx-4 -mb-5 px-8 py-3 rounded-b-xl">
+              {/* 드로어 하단 퀵 링크 바 (여백 압축 py-2.5) */}
+              <div className="mt-3.5 pt-2.5 border-t border-white/15 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-[12.5px] font-medium text-blue-100 bg-[#00388A]/80 -mx-4 -mb-4 sm:-mb-4.5 px-8 py-2.5 rounded-b-xl">
                 <div className="flex items-center gap-5">
-                  <div className="flex items-center gap-1.5 text-white">
+                  <div className="flex items-center gap-1.5 text-white font-semibold">
                     <Clock className="w-3.5 h-3.5 text-amber-300" />
                     <span>진료시간: 평일 09:00 ~ 18:00 (토요일 09:00 ~ 13:00)</span>
                   </div>
-                  <div className="hidden sm:flex items-center gap-1.5 text-white">
+                  <div className="hidden sm:flex items-center gap-1.5 text-white font-semibold">
                     <MapPin className="w-3.5 h-3.5 text-amber-300" />
                     <span>위치: 인천광역시 계양구 계양대로 140</span>
                   </div>
@@ -488,7 +486,7 @@ export default function Gem_Header() {
                   <Link
                     href="/about/directions"
                     onClick={() => setIsMegaDrawerOpen(false)}
-                    className="text-blue-100 hover:text-white text-xs"
+                    className="text-blue-100 hover:text-white"
                   >
                     오시는 길 안내 ➔
                   </Link>
@@ -496,7 +494,7 @@ export default function Gem_Header() {
                   <Link
                     href="/appointments"
                     onClick={() => setIsMegaDrawerOpen(false)}
-                    className="text-amber-300 hover:text-white text-xs"
+                    className="text-amber-300 hover:text-white"
                   >
                     온라인 간편예약 바로가기 ➔
                   </Link>
