@@ -270,17 +270,17 @@ export default function Gem_Header() {
                       <div 
                         className={`bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.16)] border border-slate-100 p-6 transition-all duration-200 ${
                           item.columns.length >= 3 
-                            ? "w-[820px]" 
+                            ? "w-[840px]" 
                             : item.columns.length === 2 
                             ? "w-[650px]" 
                             : "w-[480px]"
                         }`}
                       >
                         <div className="flex gap-6">
-                          {/* 좌측 질환 및 시술 목록 */}
-                          <div className={`grid gap-5 flex-1 ${
+                          {/* 좌측 질환 및 시술 목록 (3열인 경우 1,2열은 150px로 콤팩트하게, 3열은 220px+ 넓은 공간 자동 배분) */}
+                          <div className={`grid gap-4 flex-1 ${
                             item.columns.length >= 3 
-                              ? "grid-cols-3" 
+                              ? "grid-cols-[150px_150px_minmax(0,1fr)]" 
                               : item.columns.length === 2 
                               ? "grid-cols-2" 
                               : "grid-cols-1"
@@ -298,17 +298,17 @@ export default function Gem_Header() {
                                       <Link
                                         href={subItem.href}
                                         onClick={() => setActiveMenuId(null)}
-                                        className={`group/item flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13.5px] transition-all ${
+                                        className={`group/item flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13.5px] transition-all whitespace-nowrap ${
                                           subItem.isHighlight
                                             ? "font-extrabold text-slate-900 hover:text-[#0052CC] hover:bg-[#F0F6FF]"
                                             : "font-medium text-slate-600 hover:text-[#0052CC] hover:bg-slate-50"
                                         }`}
                                       >
-                                        <span className="group-hover/item:translate-x-0.5 transition-transform">
+                                        <span className="group-hover/item:translate-x-0.5 transition-transform truncate">
                                           {subItem.name}
                                         </span>
                                         {subItem.badge ? (
-                                          <span className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold whitespace-nowrap flex-shrink-0 ml-1.5 ${
                                             subItem.badge === "비수술"
                                               ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
                                               : subItem.badge === "수술"
@@ -318,7 +318,7 @@ export default function Gem_Header() {
                                             {subItem.badge}
                                           </span>
                                         ) : (
-                                          <ChevronRight className="w-3 h-3 text-slate-300 opacity-0 group-hover/item:opacity-100 group-hover/item:text-[#0052CC] transition-opacity" />
+                                          <ChevronRight className="w-3 h-3 text-slate-300 opacity-0 group-hover/item:opacity-100 group-hover/item:text-[#0052CC] transition-opacity flex-shrink-0" />
                                         )}
                                       </Link>
                                     </li>
