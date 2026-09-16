@@ -556,3 +556,99 @@ export const GEM_FACILITIES: GemFacilityItem[] = [
     imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAl_BsRXyrO9JziKWVEFEXa05O5DU-mY0DBOf7ZC-pBHH_iRREMcTYwYqzJ2FYWDJrBZ4Hq-vERsyP-FXiv7BBA69TH0UEOI9vvaJppWU5oB9NE45hUfAzrpZaJj2l34L7qou1kjIbTiJ-QAb8eNLK4g66QqcrpByuuHCqqELB5IdXRkSg3JX7Ppgca4FIZGmv2_TF2lCdIF0kUfliAj_GZFVYFwKje5Zej5GT6RcP6raHTYKCuUdRF2Q",
   },
 ];
+
+// 10. [최우진 대리 백엔드 연동용] 생생한 환자 치료 스토리 데이터 모델 및 시더 데이터
+export interface GemPatientStoryItem {
+  id: string;
+  category: string;
+  categoryBg: string;
+  patientName: string; // 개인정보 마스킹 (박OO 환자 등)
+  patientAge: string;
+  title: string;
+  quote: string;
+  summary: string;
+  rating: number;
+  doctorInCharge: string;
+  treatmentName: string;
+  imageUrl: string;
+  beforeSymptoms: string;
+  afterRecovery: string;
+  doctorComment: string;
+  date: string;
+}
+
+export const GEM_PATIENT_STORIES: GemPatientStoryItem[] = [
+  {
+    id: "story-1",
+    category: "허리디스크 비수술",
+    categoryBg: "bg-[#EBF2FC] text-[#0052CC]",
+    patientName: "박OO 환자",
+    patientAge: "62세",
+    title: "밤마다 잠을 못 이룰 정도로 극심했던 허리통증, 비수술 신경성형술로 말끔히 회복했습니다!",
+    quote: "여러 병원에서 무조건 수술을 권유받아 걱정이 컸는데, 인천하이병원에서는 정확한 정밀검사 후 비수술 치료를 최우선으로 진행해 주셨습니다. 원장님의 자상한 설명 덕분에 불안감 없이 빠르게 회복했습니다.",
+    summary: "극심한 허리 방사통으로 보행 장애를 겪던 중 감압신경성형술을 통해 당일 시술 후 보행 기능을 완벽히 회복한 사례입니다.",
+    rating: 5.0,
+    doctorInCharge: "서동광 병원장 (신경외과)",
+    treatmentName: "초정밀 감압신경성형술",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCwpp_AWm8PeRte1qe35tMrpkS-vfNJyHsC4Uy8fpCVTOQcUVOdGF0HfQZzjFKhti8_268D1AoeCtTlkwArI36dxEkDc0yIiIxf5CVSuM-YIxU-kcWF8dGWzq-YfqoWR8D8Ei03mo2BbC5cSMJVtYTh6WcQ_ZK32lN--qQjd9yZd6Z7P5H1LtJp5pT5mMtJ3Ewp97ovrMdtaUIHB9_fvoGfa8Q8sNOZghY8oTLc4eGhGpWkPjxlRSqOoA",
+    beforeSymptoms: "우측 다리 저림 및 10분 이상 직립 불능, 진통제 복용에도 야간 통증 지속",
+    afterRecovery: "시술 2주 차 통증지수(VAS) 8점에서 1점으로 감소, 정상 일상생활 및 가벼운 등산 가능",
+    doctorComment: "정밀 MRI 검사 결과 제4-5 요추간판 탈출증으로 신경 압박이 심했으나 마비 증상이 없어 비수술 카테터 신경성형술을 시행하여 염증과 부종을 안전하게 제거했습니다.",
+    date: "2026.02.10",
+  },
+  {
+    id: "story-2",
+    category: "무릎 인공관절 로봇수술",
+    categoryBg: "bg-teal-50 text-[#006971]",
+    patientName: "김OO 환자",
+    patientAge: "68세",
+    title: "계단 오르내리기가 무서웠는데, 3D 맞춤 인공관절 수술 후 다음 날 바로 보행 연습을 시작했습니다.",
+    quote: "연골이 다 닳아서 O자형 다리로 변형되고 매일 울면서 지냈어요. 김인철 원장님 집도로 수술받고 통증도 거의 없고 다리도 곧게 펴져서 제2의 인생을 살고 있습니다.",
+    summary: "말기 무릎 퇴행성관절염으로 다리 변형이 동반된 환자에게 3D 시뮬레이션 기반 최소절개 인공관절 치환술을 적용하여 조기 보행을 실현한 케이스입니다.",
+    rating: 5.0,
+    doctorInCharge: "김인철 명예원장 (정형외과)",
+    treatmentName: "3D 환자맞춤형 인공관절 치환술",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAoGtPxeI9KEcVTq4jotzYlY-HHIDNwlnStVvi5m7gH9Qd7PqglEadlAZk_ta7bAvXSvE7vy1hO9Qf3h1px0ayTQwKX796w9WgEBtiA6CWfDnfbPSOzaTK3ZALBuJdnX5gW0kb1w7Ec1ftSlPaTXNm83lrpFjMTzeUleUsBGD5P918cn4yq9ojcQNILN_9tBZIADdymVAUWPDpOEWbppuNXpPTBwKQOUyC1rrxKSCeMcFDupWjx0ZR6xA",
+    beforeSymptoms: "양측 무릎 관절강 협착 말기, 심한 O자 다리 변형 및 야간 관절통",
+    afterRecovery: "수술 다음 날 보행기(워커) 보행 시작, 수술 3주 차 독립 보행 및 굴곡 각도 125도 확보",
+    doctorComment: "환자분의 관절 각도와 골밀도를 3D 디지털 모델링하여 오차 없이 정확한 위치에 임플란트를 삽입함으로써 정상 인대 손상을 최소화하여 빠른 회복을 이끌어냈습니다.",
+    date: "2026.01.28",
+  },
+  {
+    id: "story-3",
+    category: "목디스크 고주파시술",
+    categoryBg: "bg-indigo-50 text-indigo-700",
+    patientName: "이OO 환자",
+    patientAge: "49세",
+    title: "어깨와 팔이 끊어질 듯 저려서 컴퓨터 작업을 못 했는데, 고주파수핵성형술 후 통증이 90% 사라졌어요.",
+    quote: "사무직이라 하루 종일 모니터를 보는데 손가락 끝까지 전기가 통하듯 찌릿찌릿했습니다. 절개 없는 1mm 미세 바늘 시술로 당일 퇴원하여 직장에 바로 복귀할 수 있었습니다.",
+    summary: "경추 추간판 탈출증으로 인한 극심한 상지 방사통을 절개 없는 고주파 열에너지로 감압 및 수축시킨 최소침습 시술 성공 사례입니다.",
+    rating: 5.0,
+    doctorInCharge: "이동걸 대표원장 (신경외과)",
+    treatmentName: "경추 고주파 수핵성형술",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAo2bCq9vYmGqCsmF4N-1n2VlJ8pY4q8T3j9_pQ0e0x-1mXj2w_N6d4bY5vQ7k9lA8e1f5g8_pP0r8q2t5",
+    beforeSymptoms: "제5-6 경추 디스크 돌출, 우측 어깨 결림 및 제4, 5 수지 저림증",
+    afterRecovery: "시술 즉시 팔 저림 80% 호전, 시술 1개월 차 경추 가동범위 완벽 회복",
+    doctorComment: "절개 없이 국소마취 하에 1mm 가느다란 특수 바늘을 디스크 내부로 진입시켜 고주파 플라즈마 에너지로 신경 압박 부위만 선택적으로 수축시켜 안정성을 극대화했습니다.",
+    date: "2026.02.04",
+  },
+  {
+    id: "story-4",
+    category: "척추관협착증 내시경",
+    categoryBg: "bg-amber-50 text-[#603B00]",
+    patientName: "정OO 환자",
+    patientAge: "73세",
+    title: "10분도 못 걷고 주저앉아야 했는데, 양방향 척추내시경 수술 후 허리를 꼿꼿이 펴고 산책합니다.",
+    quote: "나이가 많아 큰 수술은 엄두도 못 냈는데, 인천하이병원에서 내시경으로 구멍 두 개만 내어 두꺼워진 인대만 쏙 긁어내 주셨어요. 흉터도 거의 없고 통증도 씻은 듯 사라졌습니다.",
+    summary: "고령의 중증 척추관협착증 환자에게 전신마취 없이 척추 마취와 양방향 내시경(UBE)을 적용하여 안전하게 척추관을 넓혀준 고난도 치료 사례입니다.",
+    rating: 5.0,
+    doctorInCharge: "장현진 원장 (신경외과)",
+    treatmentName: "양방향 척추내시경 감압술 (UBE)",
+    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCwpp_AWm8PeRte1qe35tMrpkS-vfNJyHsC4Uy8fpCVTOQcUVOdGF0HfQZzjFKhti8_268D1AoeCtTlkwArI36dxEkDc0yIiIxf5CVSuM-YIxU-kcWF8dGWzq-YfqoWR8D8Ei03mo2BbC5cSMJVtYTh6WcQ_ZK32lN--qQjd9yZd6Z7P5H1LtJp5pT5mMtJ3Ewp97ovrMdtaUIHB9_fvoGfa8Q8sNOZghY8oTLc4eGhGpWkPjxlRSqOoA",
+    beforeSymptoms: "간헐적 파행증(50m 보행 후 주저앉음), 둔부 및 양 하지 당김과 냉감",
+    afterRecovery: "수술 3일 후 퇴원, 하루 6,000보 연속 보행 가능, 보행 장애 완치",
+    doctorComment: "초고화질 내시경으로 신경 조직을 10배 확대하여 보면서 신경을 누르는 황색인대만 정밀 제거하고 정상 뼈와 근육 손상을 최소화하여 고령 환자도 안전하게 치료를 마칠 수 있었습니다.",
+    date: "2026.01.15",
+  },
+];
+

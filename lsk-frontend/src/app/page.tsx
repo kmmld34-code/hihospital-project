@@ -9,6 +9,7 @@ import Gem_InteractiveBody3D from "@/components/Gem_InteractiveBody3D";
 import Gem_DoctorsSpotlight from "@/components/Gem_DoctorsSpotlight";
 import Gem_ClinicalMetrics from "@/components/Gem_ClinicalMetrics";
 import Gem_SpecialtyCenters from "@/components/Gem_SpecialtyCenters";
+import Gem_PatientStorySection from "@/components/Gem_PatientStorySection";
 import { GEM_NEWS_ITEMS, GEM_FACILITIES, GemFacilityItem } from "@/data/hospitalData";
 import {
   ChevronRight,
@@ -118,85 +119,8 @@ export default function HomePage() {
               isStoryVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            {/* 좌측 열: 생생한 환자 치료 스토리 (블로그 스토리 - 호버 리프트) */}
-            <div className="space-y-6 flex flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-[#0052CC] text-xs font-bold uppercase tracking-wider block mb-1">
-                    BLOG STORIES
-                  </span>
-                  <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                    생생한 환자 치료 스토리
-                  </h3>
-                </div>
-                <Link
-                  href="/community/blog"
-                  className="text-xs sm:text-sm font-bold text-[#0052CC] hover:underline flex items-center gap-1 group"
-                >
-                  <span>블로그 전체보기</span>
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-
-              {/* 환자 치료 후기 카드 (호버 리프트: -translate-y-2 + 딥 그림자) */}
-              <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200/80 flex-1 flex flex-col justify-between group cursor-pointer transition-all duration-500 ease-out hover:-translate-y-2.5 hover:shadow-[0_20px_35px_-5px_rgba(7,30,84,0.16)] hover:border-[#0052CC]/40">
-                {/* 상단 썸네일 이미지 (Next.js Image + 호버 줌인) */}
-                <div className="relative w-full bg-[#071E54] overflow-hidden min-h-[300px] sm:min-h-[340px]">
-                  <Image
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwpp_AWm8PeRte1qe35tMrpkS-vfNJyHsC4Uy8fpCVTOQcUVOdGF0HfQZzjFKhti8_268D1AoeCtTlkwArI36dxEkDc0yIiIxf5CVSuM-YIxU-kcWF8dGWzq-YfqoWR8D8Ei03mo2BbC5cSMJVtYTh6WcQ_ZK32lN--qQjd9yZd6Z7P5H1LtJp5pT5mMtJ3Ewp97ovrMdtaUIHB9_fvoGfa8Q8sNOZghY8oTLc4eGhGpWkPjxlRSqOoA"
-                    alt="환자 치료 후기 사진"
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#071E54]/90 via-[#071E54]/30 to-transparent" />
-
-                  {/* 블로그 스토리 뱃지 */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className="bg-[#0052CC]/90 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
-                      <Camera className="w-3.5 h-3.5" />
-                      <span>블로그 스토리</span>
-                    </span>
-                  </div>
-
-                  {/* 별점 및 평점 표시 */}
-                  <div className="absolute bottom-4 left-6 right-6 flex items-center justify-between text-white z-10">
-                    <div className="flex items-center gap-1 text-amber-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                      ))}
-                      <span className="text-white text-xs font-bold ml-1.5">
-                        5.0 (치료 만족도)
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 하단 텍스트 및 상세 인터뷰 내용 */}
-                <div className="p-6 sm:p-7 bg-white">
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <span className="bg-[#EBF2FC] text-[#0052CC] text-xs px-2.5 py-0.5 rounded-full font-bold">
-                      허리디스크 비수술
-                    </span>
-                    <span className="text-slate-400 text-xs font-medium">
-                      박OO 환자 (62세)
-                    </span>
-                  </div>
-
-                  <h4 className="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-[#0052CC] transition-colors leading-snug">
-                    "밤마다 잠을 못 이룰 정도로 극심했던 허리통증, 비수술 신경성형술로
-                    말끔히 회복했습니다!"
-                  </h4>
-
-                  <p className="text-xs sm:text-sm text-slate-500 mt-2.5 leading-relaxed break-keep">
-                    여러 병원에서 무조건 수술을 권유받아 걱정이 컸는데,
-                    인천하이병원에서는 정확한 정밀검사 후 비수술 치료를 최우선으로
-                    진행해 주셨습니다. 원장님의 자상한 설명 덕분에 불안감 없이 빠르게
-                    회복했습니다.
-                  </p>
-                </div>
-              </div>
-            </div>
+            {/* 좌측 열: 생생한 환자 치료 스토리 (동적 API 연동 및 슬라이드 & 모달 완비) */}
+            <Gem_PatientStorySection />
 
             {/* 우측 열: 하이병원 소식 & 언론보도 (호버 리프트) */}
             <div className="space-y-6 flex flex-col justify-between">
@@ -274,17 +198,17 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* 필터 탭 버튼 */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+            {/* 필터 탭 버튼 (scale-105 제거 및 py-1 적용으로 스크롤바 생성 방지) */}
+            <div className="flex items-center gap-2 overflow-x-auto py-1 scrollbar-none">
               {facilityCategories.map((cat) => (
                 <button
                   key={cat}
                   type="button"
                   onClick={() => setSelectedFacilityCategory(cat)}
-                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-colors duration-150 cursor-pointer ${
                     selectedFacilityCategory === cat
-                      ? "bg-[#0052CC] text-white shadow-md scale-105"
-                      : "bg-slate-100 hover:bg-slate-200 text-slate-600"
+                      ? "bg-[#0052CC] text-white shadow-sm border border-[#0052CC]"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-600 border border-transparent"
                   }`}
                 >
                   {cat}
@@ -293,8 +217,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* 6열 컴팩트 시설 카드 그리드 (스태거 리빌 + 호버 줌인 리프트) */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {/* 6열 컴팩트 시설 카드 그리드 (min-h-[220px] 적용으로 필터 전환 시 세로 스크롤바 깜빡임 완전 방지) */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 min-h-[220px]">
             {filteredFacilities.map((fac, idx) => (
               <div
                 key={fac.id}

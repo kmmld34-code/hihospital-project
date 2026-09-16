@@ -194,16 +194,16 @@ export default function Gem_DoctorsSpotlight() {
             </p>
           </div>
 
-          {/* 필터 탭 버튼 목록 */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+          {/* 필터 탭 버튼 목록 (scale-105 제거 및 py-1 패딩으로 가로/세로 스크롤바 튐 완전 차단) */}
+          <div className="flex items-center gap-2 overflow-x-auto py-1 scrollbar-none">
             {filterTabs.map((tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => handleTabChange(tab)}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-colors duration-150 cursor-pointer ${
                   selectedDept === tab
-                    ? "bg-[#0052CC] text-white shadow-md scale-105"
+                    ? "bg-[#0052CC] text-white shadow-sm border border-[#0052CC]"
                     : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:bg-slate-50"
                 }`}
               >
