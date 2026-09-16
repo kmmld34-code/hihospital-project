@@ -25,17 +25,17 @@ import { GEM_EXTENDED_NAV_ITEMS, GEM_SITEMAP_NAV_ITEMS } from "@/data/navigation
  * ==============================================================================
  * 작성자: 고윤기 대리 (Frontend Lead Engineer)
  * 기획 및 디자인 감수: 강수진 PM, 정재이 과장 (UI/UX)
- * 대표님 지침 2차 고도화 반영 (2026-09-16)
+ * 백엔드 아키텍처 지원: 최우진 대리, 박동훈 차장
  * ==============================================================================
- * [주요 반영 사양]
- * 1. 주메뉴 좌/우 대칭 여백 2배 확장 (mx-12 lg:mx-16 2xl:mx-20):
- *    - [로고] ↔ [주메뉴] 및 [주메뉴] ↔ [버튼군] 여백을 기존의 2배로 확장하여 시각적 호흡감 극대화
- *    - 줄어든 가로폭 안에서 11개 메뉴가 1px의 오차 없이 균등하게 자동 재배열 (justify-between)
- * 2. '전체메뉴' 가독성 대폭 향상 (시니어/노안 환자 배려) & 세로폭 유지:
- *    - 창의 세로 높이를 늘리지 않고 카드 내부/상하 여백을 압축
- *    - 진료과 타이틀: text-[13.5px] -> text-[15.5px]~[16px] 선명한 화이트 font-black
- *    - 세부 질환 텍스트: text-[12px] -> text-[13.5px]~[14px] 100% 화이트 font-bold
- *    - 어르신 환자분들도 돋보기 없이 시원하게 읽을 수 있는 최적의 시인성 확보
+ * [대표님 3차 디테일 지침 완벽 반영 (2026-09-16)]
+ * 1. 주메뉴 마우스오버 반응 영역(히트박스) 대폭 확장:
+ *    - 글자 주변뿐만 아니라 헤더 전체 세로 높이(80px) 및 글자 하단 전체를 투명 히트박스로 확장
+ *    - 마우스가 글자 밑으로 내려가도 마우스오버가 끊기지 않는 강력한 안정감 확보
+ * 2. 모든 서브메뉴 박스 100% 주메뉴 기준 정중앙(Center) 정렬 통일:
+ *    - 맨 좌측('병원소개')이든 맨 우측('커뮤니티')이든 예외 없이,
+ *      마우스 올린 주메뉴가 서브메뉴 박스의 정중앙에 위치하도록 `left-1/2 -translate-x-1/2`로 일관성 확립!
+ *    - 텍스트 하단과 팝오버 상단 사이의 빈틈을 투명 브릿지로 완전 연결하여 빗나감 0% 달성
+ * 3. 주메뉴 좌/우 대칭 여백 2배 확장 및 사이트맵 어르신 가독성 14px~16px 확대 상태 완벽 유지
  * ==============================================================================
  */
 
@@ -49,7 +49,7 @@ export default function Gem_Header() {
   const [searchQuery, setSearchQuery] = useState<string>(""); // 최상단 검색어
   const [mobileExpandedId, setMobileExpandedId] = useState<string | null>("spine"); // 모바일 아코디언 열림 메뉴
 
-  // 2. 호버 딜레이 타이머 참조 (사선 이동 빗나감 방지용 280ms)
+  // 2. 호버 딜레이 타이머 참조 (사선 이동 빗나감 방지용 300ms)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 마우스 진입 핸들러
@@ -60,11 +60,11 @@ export default function Gem_Header() {
     setActiveMenuId(menuId);
   };
 
-  // 마우스 이탈 핸들러 (사선 이동 시간 확보를 위해 280ms 딜레이 적용)
+  // 마우스 이탈 핸들러 (충분한 골든타임 300ms 부여)
   const handleMouseLeave = () => {
     hoverTimeoutRef.current = setTimeout(() => {
       setActiveMenuId(null);
-    }, 280);
+    }, 300);
   };
 
   // 통합 검색 제출 핸들러
@@ -176,7 +176,7 @@ export default function Gem_Header() {
       </div>
 
       {/* ============================================================================== */}
-      {/* 2. 메인 GNB 헤더 (로고 - 주메뉴라인 - 우측버튼군 대칭 여백 2배 확장) */}
+      {/* 2. 메인 GNB 헤더 (로고 - 주메뉴라인 - 우측버튼군) */}
       {/* ============================================================================== */}
       <div className="Gem_HeaderNavWrapper w-full relative">
         <div className="Gem_Container max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-[76px] sm:h-[80px] flex items-center justify-between">
@@ -221,58 +221,54 @@ export default function Gem_Header() {
             </div>
           </Link>
 
-          {/* [2] 중앙 데스크톱 주메뉴라인 (좌우 여백을 기존의 2배인 mx-12 lg:mx-16 2xl:mx-20으로 확장) */}
-          {/* 줄어든 폭 안에서 11개 메뉴를 justify-between으로 고르게 자동 배열 */}
+          {/* [2] 중앙 데스크톱 주메뉴라인 (대칭 여백 mx-12 lg:mx-16 2xl:mx-20 적용) */}
           <nav 
             className="Gem_HeaderDesktopNav hidden xl:flex items-center justify-between flex-1 mx-12 lg:mx-16 2xl:mx-20 h-full"
             onMouseLeave={handleMouseLeave}
           >
-            {GEM_EXTENDED_NAV_ITEMS.map((item, index) => {
+            {GEM_EXTENDED_NAV_ITEMS.map((item) => {
               const isActive = activeMenuId === item.id;
               return (
                 <div
                   key={item.id}
-                  className="h-full flex items-center relative px-0.5"
+                  /* [개선 1] 헤더 전체 세로 높이(h-full)를 100% 활용하는 넓은 마우스오버 히트박스 영역 */
+                  className="h-full flex items-center justify-center relative group/navitem cursor-pointer"
                   onMouseEnter={() => handleMouseEnter(item.id)}
                 >
+                  {/* [개선 1] 텍스트 아래부분까지 마우스 반응 영역을 넓히는 투명 패딩 버튼 링크 */}
                   <Link
                     href={item.href}
-                    className={`Gem_NavItem text-[15.5px] 2xl:text-[16px] font-extrabold tracking-tight py-2 transition-all inline-flex items-center gap-1 group relative whitespace-nowrap ${
+                    className={`Gem_NavItem h-full flex items-center justify-center px-1.5 2xl:px-2.5 text-[15.5px] 2xl:text-[16px] font-extrabold tracking-tight transition-all relative whitespace-nowrap select-none ${
                       isActive ? "text-[#0052CC]" : "text-slate-700 hover:text-[#0052CC]"
                     }`}
                   >
                     <span>{item.name}</span>
-                    {/* 호버 시 하단 언더라인 */}
+                    {/* 호버 시 하단 언더라인 인디케이터 (헤더 밑바닥 6px 상단에 위치) */}
                     <span 
-                      className={`absolute bottom-0 left-0 h-[2.5px] bg-[#0052CC] transition-all duration-200 ${
-                        isActive ? "w-full" : "w-0 group-hover:w-full"
+                      className={`absolute bottom-3 left-0 h-[2.5px] bg-[#0052CC] transition-all duration-200 ${
+                        isActive ? "w-full" : "w-0 group-hover/navitem:w-full"
                       }`} 
                     />
                   </Link>
 
                   {/* ============================================================================== */}
-                  {/* 투명 히트박스 브릿지 탑재로 양 끝 메뉴 사선 이동 빗나감 100% 원천 차단 */}
+                  {/* [개선 2] 무조건 주메뉴를 기준으로 100% 정중앙 센터링 (left-1/2 -translate-x-1/2) */}
                   {/* ============================================================================== */}
                   {isActive && !isMegaDrawerOpen && (
                     <div
-                      className={`absolute top-full pt-1.5 z-50 pointer-events-auto hidden xl:block animate-in fade-in zoom-in-95 duration-150 ${
-                        index <= 2 
-                          ? "left-0" // 0~2번: 주메뉴 좌측에 맞춰 우측 확장
-                          : index >= 8 
-                          ? "right-0" // 8~10번: 주메뉴 우측에 맞춰 좌측 확장
-                          : "left-1/2 -translate-x-1/2" // 중간 메뉴: 중앙 정렬
-                      }`}
+                      /* 어떤 메뉴든 예외 없이 해당 주메뉴 텍스트의 정중앙에 서브메뉴 박스가 안착됨! */
+                      className="absolute top-full left-1/2 -translate-x-1/2 pt-1 z-50 pointer-events-auto hidden xl:block animate-in fade-in zoom-in-95 duration-150"
                       onMouseEnter={() => {
                         if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
                       }}
                       onMouseLeave={handleMouseLeave}
                     >
-                      {/* 사선 이동 빗나감 방지용 투명 브릿지 레이어 (Hitbox Bridge) */}
-                      <div className="absolute -top-3 left-0 w-full h-4 bg-transparent pointer-events-auto" />
+                      {/* [개선 1] 텍스트 밑부분과 팝오버 상단 사이의 빈틈을 완벽하게 메우는 투명 브릿지 레이어 */}
+                      <div className="absolute -top-4 left-0 w-full h-5 bg-transparent pointer-events-auto" />
 
                       {/* 팝오버 본체 카드 */}
                       <div 
-                        className={`bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 p-6 transition-all duration-200 ${
+                        className={`bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.16)] border border-slate-100 p-6 transition-all duration-200 ${
                           item.columns.length >= 3 
                             ? "w-[820px]" 
                             : item.columns.length === 2 
@@ -406,7 +402,7 @@ export default function Gem_Header() {
         </div>
 
         {/* ============================================================================== */}
-        {/* [대표님 지침 반영] 전체메뉴 드로어: 글자 크기 대폭 확대(노안/시니어 배려) & 세로폭 유지 */}
+        {/* 전체메뉴 드로어: 글자 크기 대폭 확대(노안/시니어 배려 14~16px) & 세로폭 320px 유지 */}
         {/* ============================================================================== */}
         {isMegaDrawerOpen && (
           <div className="Gem_MegaDrawerWrapper absolute top-full left-0 w-full bg-gradient-to-b from-[#0047B3] to-[#0052CC] text-white shadow-[0_25px_60px_rgba(0,0,0,0.35)] border-b-4 border-[#00388A] animate-in slide-in-from-top-2 duration-200 z-50">
@@ -442,7 +438,7 @@ export default function Gem_Header() {
                     key={nav.id} 
                     className="space-y-1.5 bg-white/5 p-2 sm:p-2.5 rounded-xl border border-white/10 hover:border-white/30 transition-colors"
                   >
-                    {/* 진료과 메인 타이틀: text-[15.5px] 굵은 화이트 텍스트 */}
+                    {/* 진료과 메인 타이틀: text-[15px] sm:text-[15.5px] 굵은 화이트 텍스트 */}
                     <Link
                       href={nav.href}
                       onClick={() => setIsMegaDrawerOpen(false)}
@@ -452,7 +448,7 @@ export default function Gem_Header() {
                       <ChevronRight className="w-3.5 h-3.5 text-blue-200 flex-shrink-0" />
                     </Link>
 
-                    {/* 세부 질환 링크: text-[13.5px]~[14px] 100% 선명한 화이트 font-bold로 가독성 극대화 */}
+                    {/* 세부 질환 링크: text-[13.5px]~[14px] 100% 선명한 화이트 font-bold */}
                     <ul className="space-y-0.5">
                       {nav.items.map((subItem) => (
                         <li key={subItem.name}>
@@ -470,7 +466,7 @@ export default function Gem_Header() {
                 ))}
               </div>
 
-              {/* 드로어 하단 퀵 링크 바 (여백 압축 py-2.5) */}
+              {/* 드로어 하단 퀵 링크 바 */}
               <div className="mt-3.5 pt-2.5 border-t border-white/15 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-[12.5px] font-medium text-blue-100 bg-[#00388A]/80 -mx-4 -mb-4 sm:-mb-4.5 px-8 py-2.5 rounded-b-xl">
                 <div className="flex items-center gap-5">
                   <div className="flex items-center gap-1.5 text-white font-semibold">
