@@ -354,3 +354,147 @@ export const GEM_EXTENDED_NAV_ITEMS: NavItem[] = [
     },
   },
 ];
+
+// ==============================================================================
+// [전체메뉴 사이트맵 전용 슬림 데이터 명세 (GEM_SITEMAP_NAV_ITEMS)]
+// ==============================================================================
+// 정재이 과장 & 대표님 지침 반영:
+// 척추클리닉, 무릎·고관절의 복잡한 3단 개별 시술법을 생략하고 
+// 2단 대표 카테고리(척추 비수술클리닉, 척추 수술클리닉, 무릎 인공관절수술)로 슬림화하여
+// 11개 진료과 컬럼의 세로 높이를 고르게 평준화하고 화면 압박감을 40% 이상 해소함.
+// ==============================================================================
+export const GEM_SITEMAP_NAV_ITEMS = [
+  {
+    id: "about",
+    name: "병원소개",
+    href: "/about",
+    items: [
+      { name: "인사말", href: "/about/greeting" },
+      { name: "의료진소개", href: "/about/doctors" },
+      { name: "진료시간안내", href: "/about/hours" },
+      { name: "입원안내", href: "/about/hospitalization" },
+      { name: "오시는길", href: "/about/directions" },
+    ],
+  },
+  {
+    id: "neurosurgery",
+    name: "뇌신경",
+    href: "/neurosurgery",
+    items: [
+      { name: "두통·어지럼증", href: "/neurosurgery/headache-dizziness" },
+      { name: "치매", href: "/neurosurgery/dementia" },
+      { name: "뇌졸중(중풍)", href: "/neurosurgery/stroke" },
+      { name: "말초신경병", href: "/neurosurgery/peripheral-neuropathy" },
+    ],
+  },
+  {
+    id: "spine",
+    name: "척추클리닉",
+    href: "/spine",
+    items: [
+      { name: "목디스크", href: "/spine/cervical-disc" },
+      { name: "거북목·일자목", href: "/spine/turtle-neck" },
+      { name: "경추 척추관협착증", href: "/spine/cervical-stenosis" },
+      { name: "허리디스크", href: "/spine/lumbar-disc" },
+      { name: "척추관협착증", href: "/spine/lumbar-stenosis" },
+      { name: "압박골절·측만증", href: "/spine/compression-fracture" },
+      { name: "척추전방전위증", href: "/spine/spondylolisthesis" },
+      { name: "척추 비수술클리닉", href: "/spine/non-surgery/decompression-neuroplasty" },
+      { name: "척추 수술클리닉", href: "/spine/surgery/microscopic" },
+    ],
+  },
+  {
+    id: "knee-hip",
+    name: "무릎·고관절",
+    href: "/knee-hip",
+    items: [
+      { name: "퇴행성 관절염", href: "/knee-hip/arthritis" },
+      { name: "무릎 연골판 손상", href: "/knee-hip/cartilage-injury" },
+      { name: "십자인대 파열", href: "/knee-hip/ligament-tear" },
+      { name: "슬개골 연골연화증", href: "/knee-hip/chondromalacia" },
+      { name: "대퇴골두무혈성괴사", href: "/knee-hip/avn" },
+      { name: "줄기세포 연골재생술", href: "/knee-hip/cartilage-regeneration" },
+      { name: "무릎 인공관절수술", href: "/knee-hip/knee-replacement" },
+    ],
+  },
+  {
+    id: "shoulder",
+    name: "어깨관절",
+    href: "/shoulder",
+    items: [
+      { name: "회전근개 파열", href: "/shoulder/rotator-cuff" },
+      { name: "오십견", href: "/shoulder/frozen-shoulder" },
+      { name: "석회화건염", href: "/shoulder/calcific-tendinitis" },
+      { name: "어깨충돌증후군", href: "/shoulder/impingement" },
+      { name: "체외충격파&주사", href: "/shoulder/eswt" },
+    ],
+  },
+  {
+    id: "hand-foot",
+    name: "수·족부",
+    href: "/hand-foot",
+    items: [
+      { name: "손목터널증후군", href: "/hand-foot/carpal-tunnel" },
+      { name: "테니스·골프엘보", href: "/hand-foot/tennis-elbow" },
+      { name: "방아쇠수지", href: "/hand-foot/trigger-finger" },
+      { name: "무지외반증", href: "/hand-foot/hallux-valgus" },
+      { name: "족저근막염", href: "/hand-foot/plantar-fasciitis" },
+      { name: "발목인대 재건술", href: "/hand-foot/ankle-ligament-reconstruction" },
+    ],
+  },
+  {
+    id: "surgery-general",
+    name: "외과진료",
+    href: "/surgery-general",
+    items: [
+      { name: "대장항문·치핵", href: "/surgery-general/colorectal-hemorrhoid" },
+      { name: "액취증 클리닉", href: "/surgery-general/osmidrosis" },
+      { name: "하지정맥류 시술", href: "/surgery-general/varicose-veins" },
+    ],
+  },
+  {
+    id: "internal-medicine",
+    name: "내과진료",
+    href: "/internal-medicine",
+    items: [
+      { name: "일반내과(만성질환)", href: "/internal-medicine/general" },
+      { name: "인공신장실(혈액투석)", href: "/internal-medicine/dialysis" },
+    ],
+  },
+  {
+    id: "checkup",
+    name: "건강검진",
+    href: "/checkup",
+    items: [
+      { name: "국가건강검진", href: "/checkup/national" },
+      { name: "5대 암검진", href: "/checkup/cancer" },
+      { name: "종합건강검진", href: "/checkup/comprehensive" },
+      { name: "100세 맞춤 시니어검진", href: "/checkup/happy-dream/age-100" },
+      { name: "여성·남성 정밀검진", href: "/checkup/happy-dream/female" },
+    ],
+  },
+  {
+    id: "obgyn",
+    name: "산부인과",
+    href: "/obgyn",
+    items: [
+      { name: "폐경·갱년기 클리닉", href: "/obgyn/menopause" },
+      { name: "비만·체형 클리닉", href: "/obgyn/obesity" },
+      { name: "일반여성질환 검진", href: "/obgyn/general-women" },
+    ],
+  },
+  {
+    id: "community",
+    name: "커뮤니티",
+    href: "/community",
+    items: [
+      { name: "병원소식 & 공지", href: "/community/news" },
+      { name: "전문의 건강칼럼", href: "/community/blog" },
+      { name: "비급여 진료비용", href: "/community/non-reimbursable" },
+      { name: "주간 영양 식단표", href: "/community/diet-menu" },
+      { name: "1:1 온라인 상담문의", href: "/community/inquiry" },
+      { name: "자주 묻는 질문(FAQ)", href: "/community/faq" },
+    ],
+  },
+];
+
