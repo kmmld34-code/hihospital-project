@@ -60,7 +60,7 @@ export default function Gem_SpecialtyCenters() {
       case "neuro":
         return "bg-[#603B00]"; // 3번 뇌신경 치매: 브라운 #603b00
       case "dialysis":
-        return "bg-[#603B00]"; // 4번 인공신장: 브라운 #603b00
+        return "bg-[#334155]"; // 4번 인공신장: 대표님 지정 다크 슬레이트 #334155
       default:
         return "bg-[#0052CC]";
     }
