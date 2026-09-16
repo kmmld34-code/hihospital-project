@@ -52,19 +52,34 @@ export default function Gem_Header() {
   // 2. 호버 딜레이 타이머 참조 (사선 이동 빗나감 방지용 300ms)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 마우스 진입 핸들러
+  // 마우스 진입 및 이동 핸들러 (타이머 무조건 즉각 취소 및 메뉴 활성화 유지)
   const handleMouseEnter = (menuId: string) => {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
     }
     setActiveMenuId(menuId);
   };
 
-  // 마우스 이탈 핸들러 (충분한 골든타임 300ms 부여)
+  // 주메뉴 위에서 마우스가 움직일 때도 타이머 즉각 클리어 (하위메뉴에서 위로 올라올 때 사라짐 방지)
+  const handleMenuMouseMove = (menuId: string) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    if (activeMenuId !== menuId) {
+      setActiveMenuId(menuId);
+    }
+  };
+
+  // 마우스 이탈 핸들러 (충분한 골든타임 350ms 부여)
   const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
     hoverTimeoutRef.current = setTimeout(() => {
       setActiveMenuId(null);
-    }, 300);
+    }, 350);
   };
 
   // 통합 검색 제출 핸들러
@@ -234,10 +249,13 @@ export default function Gem_Header() {
                   /* [개선 1] 헤더 전체 세로 높이(h-full)를 100% 활용하는 넓은 마우스오버 히트박스 영역 */
                   className="h-full flex items-center justify-center relative group/navitem cursor-pointer"
                   onMouseEnter={() => handleMouseEnter(item.id)}
+                  onMouseMove={() => handleMenuMouseMove(item.id)}
                 >
                   {/* [개선 1] 텍스트 아래부분까지 마우스 반응 영역을 넓히는 투명 패딩 버튼 링크 */}
                   <Link
                     href={item.href}
+                    onMouseEnter={() => handleMouseEnter(item.id)}
+                    onMouseMove={() => handleMenuMouseMove(item.id)}
                     className={`Gem_NavItem h-full flex items-center justify-center px-1.5 2xl:px-2.5 text-[15.5px] 2xl:text-[16px] font-extrabold tracking-tight transition-all relative whitespace-nowrap select-none ${
                       isActive ? "text-[#0052CC]" : "text-slate-700 hover:text-[#0052CC]"
                     }`}
@@ -258,13 +276,16 @@ export default function Gem_Header() {
                     <div
                       /* 어떤 메뉴든 예외 없이 해당 주메뉴 텍스트의 정중앙에 서브메뉴 박스가 안착됨! */
                       className="absolute top-full left-1/2 -translate-x-1/2 pt-1 z-50 pointer-events-auto hidden xl:block animate-in fade-in zoom-in-95 duration-150"
-                      onMouseEnter={() => {
-                        if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-                      }}
+                      onMouseEnter={() => handleMouseEnter(item.id)}
+                      onMouseMove={() => handleMenuMouseMove(item.id)}
                       onMouseLeave={handleMouseLeave}
                     >
-                      {/* [개선 1] 텍스트 밑부분과 팝오버 상단 사이의 빈틈을 완벽하게 메우는 투명 브릿지 레이어 */}
-                      <div className="absolute -top-4 left-0 w-full h-5 bg-transparent pointer-events-auto" />
+                      {/* [개선 1] 텍스트 밑부분과 팝오버 상단 사이의 빈틈을 완벽하게 메우는 넓은 투명 브릿지 레이어 */}
+                      <div 
+                        className="absolute -top-6 left-0 w-full h-8 bg-transparent pointer-events-auto"
+                        onMouseEnter={() => handleMouseEnter(item.id)}
+                        onMouseMove={() => handleMenuMouseMove(item.id)}
+                      />
 
                       {/* 팝오버 본체 카드 */}
                       <div 
@@ -298,11 +319,7 @@ export default function Gem_Header() {
                                       <Link
                                         href={subItem.href}
                                         onClick={() => setActiveMenuId(null)}
-                                        className={`group/item flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13.5px] transition-all whitespace-nowrap ${
-                                          subItem.isHighlight
-                                            ? "font-extrabold text-slate-900 hover:text-[#0052CC] hover:bg-[#F0F6FF]"
-                                            : "font-medium text-slate-600 hover:text-[#0052CC] hover:bg-slate-50"
-                                        }`}
+                                        className="group/item flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[13.5px] font-bold text-slate-900 hover:text-[#0052CC] hover:bg-[#F0F6FF] transition-all whitespace-nowrap"
                                       >
                                         <span className="group-hover/item:translate-x-0.5 transition-transform truncate">
                                           {subItem.name}
