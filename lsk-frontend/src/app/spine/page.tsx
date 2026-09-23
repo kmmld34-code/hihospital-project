@@ -1,12 +1,13 @@
 import React from "react";
 import { Metadata } from "next";
-import Gem_SpineCenterOneScrollPage from "@/components/Gem_SpineCenterOneScrollPage";
+import Gem_CategoryHubPage from "@/components/Gem_CategoryHubPage";
 
 /**
  * ==============================================================================
  * [Next.js App Router] 척추클리닉 대표 메인 페이지 (/spine)
  * ==============================================================================
- * 척추클리닉 1Depth 진입 시 기본 대표 페이지로 척추센터 종합 원스크롤 허브(3-Test2)를 렌더링합니다.
+ * 척추클리닉 1Depth 진입 시, 서브메뉴 전체를 함축 요약하는
+ * 가로 탭바 + 지그재그 스크롤 슬라이드-인 허브 페이지(Gem_CategoryHubPage)를 렌더링합니다.
  * ==============================================================================
  */
 
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 export default function SpineMainRoutePage() {
   return (
     <div className="w-full min-h-screen bg-white">
-      <Gem_SpineCenterOneScrollPage />
+      <Gem_CategoryHubPage categoryId="spine" />
     </div>
   );
 }

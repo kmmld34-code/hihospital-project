@@ -409,9 +409,12 @@ export default function Gem_Footer() {
               {/* 8번 수정: 카피라이트 끝에 저시인성 '관리자' 텍스트 추가 (링크 없음) */}
               <p className="text-slate-500">
                 © 2026 인천하이병원. All rights reserved.{" "}
-                <span className="text-slate-600 select-none ml-1.5 text-[10px]">
+                <Link
+                  href="/admin/subpages"
+                  className="text-slate-600 select-none ml-1.5 text-[10px] cursor-default no-underline hover:text-slate-600 focus:outline-none"
+                >
                   관리자
-                </span>
+                </Link>
               </p>
             </div>
           </div>

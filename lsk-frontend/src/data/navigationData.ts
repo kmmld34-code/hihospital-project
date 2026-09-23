@@ -32,6 +32,7 @@ export interface CurationCard {
   badge?: string;
   href: string;
   actionText: string;
+  requireAuthTitle?: boolean;
 }
 
 export interface NavItem {
@@ -123,11 +124,11 @@ export const GEM_EXTENDED_NAV_ITEMS: NavItem[] = [
       {
         title: "비수술 / 수술 치료",
         items: [
-          { name: "감압신경성형술", href: "/spine/non-surgery/decompression-neuroplasty", badge: "비수술" },
-          { name: "고주파수핵성형술", href: "/spine/non-surgery/rf-nucleoplasty", badge: "비수술" },
-          { name: "선택적신경차단술", href: "/spine/non-surgery/nerve-block", badge: "비수술" },
-          { name: "미세현미경 디스크제거술", href: "/spine/surgery/microscopic", badge: "수술" },
-          { name: "척추체성형술(골시멘트)", href: "/spine/surgery/vertebroplasty", badge: "수술" },
+          { name: "감압신경성형술", href: "/spine/decompression-neuroplasty", badge: "비수술" },
+          { name: "고주파수핵성형술", href: "/spine/rf-nucleoplasty", badge: "비수술" },
+          { name: "선택적신경차단술", href: "/spine/nerve-block", badge: "비수술" },
+          { name: "미세현미경 디스크제거술", href: "/spine/microscopic", badge: "수술" },
+          { name: "척추체성형술(골시멘트)", href: "/spine/vertebroplasty", badge: "수술" },
         ],
       },
     ],
@@ -135,7 +136,7 @@ export const GEM_EXTENDED_NAV_ITEMS: NavItem[] = [
       title: "비수술 우선 척추 솔루션",
       description: "환자의 90% 이상은 비수술적 시술과 맞춤 재활로 호전될 수 있습니다.",
       badge: "특화클리닉",
-      href: "/spine/non-surgery/decompression-neuroplasty",
+      href: "/spine/decompression-neuroplasty",
       actionText: "비수술 시술 알아보기",
     },
   },
@@ -337,20 +338,21 @@ export const GEM_EXTENDED_NAV_ITEMS: NavItem[] = [
         title: "소식 및 소통",
         items: [
           { name: "병원소식 & 공지", href: "/community/news", isHighlight: true },
-          { name: "전문의 건강칼럼(블로그)", href: "/community/blog" },
+          { name: "건강칼럼(블로그)", href: "/community/blog" },
           { name: "비급여 진료비용 안내", href: "/community/non-reimbursable" },
           { name: "주간 영양 식단표", href: "/community/diet-menu" },
-          { name: "1:1 온라인 상담문의", href: "/community/inquiry", isHighlight: true },
+          { name: "온라인문의", href: "/community/inquiry", isHighlight: true },
           { name: "자주 묻는 질문(FAQ)", href: "/community/faq" },
         ],
       },
     ],
     curation: {
-      title: "1:1 전문의 온라인 상담",
-      description: "병원 방문 전 궁금한 증상이나 진료 문의를 남겨주시면 친절히 답변드립니다.",
-      badge: "온라인상담",
+      title: "1:1 온라인상담",
+      description: "1:1문의는 로그인 후 이용 가능하며, 문의하신 질문과 답변 내역을 안전하게 따로 관리하실 수 있습니다.",
+      badge: "온라인문의",
       href: "/community/inquiry",
       actionText: "온라인 문의 남기기",
+      requireAuthTitle: true,
     },
   },
 ];
@@ -399,8 +401,8 @@ export const GEM_SITEMAP_NAV_ITEMS = [
       { name: "척추관협착증", href: "/spine/lumbar-stenosis" },
       { name: "압박골절·측만증", href: "/spine/compression-fracture" },
       { name: "척추전방전위증", href: "/spine/spondylolisthesis" },
-      { name: "척추 비수술클리닉", href: "/spine/non-surgery/decompression-neuroplasty" },
-      { name: "척추 수술클리닉", href: "/spine/surgery/microscopic" },
+      { name: "척추 비수술클리닉", href: "/spine/decompression-neuroplasty" },
+      { name: "척추 수술클리닉", href: "/spine/microscopic" },
     ],
   },
   {
@@ -489,10 +491,10 @@ export const GEM_SITEMAP_NAV_ITEMS = [
     href: "/community",
     items: [
       { name: "병원소식 & 공지", href: "/community/news" },
-      { name: "전문의 건강칼럼", href: "/community/blog" },
+      { name: "건강칼럼(블로그)", href: "/community/blog" },
       { name: "비급여 진료비용", href: "/community/non-reimbursable" },
       { name: "주간 영양 식단표", href: "/community/diet-menu" },
-      { name: "1:1 온라인 상담문의", href: "/community/inquiry" },
+      { name: "온라인문의", href: "/community/inquiry" },
       { name: "자주 묻는 질문(FAQ)", href: "/community/faq" },
     ],
   },

@@ -95,6 +95,31 @@ export default function Gem_Header() {
     setActiveMenuId(null);
   };
 
+  // 회원 전용 1:1문의 클릭 핸들러 (대표님 지침: 비로그인 시 로그인 필요 안내 및 이동)
+  const handleMemberInquiryClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setActiveMenuId(null);
+    setMobileMenuOpen(false);
+
+    // 로그인 여부 검증 (로컬 스토리지 토큰 또는 로그인 플래그)
+    const isLoggedIn = typeof window !== "undefined" && (
+      Boolean(localStorage.getItem("access_token")) ||
+      Boolean(localStorage.getItem("is_logged_in")) ||
+      Boolean(document.cookie.includes("user_session"))
+    );
+
+    if (isLoggedIn) {
+      router.push("/mypage/inquiry");
+    } else {
+      const confirmLogin = window.confirm(
+        `1:1문의는 회원 전용 서비스입니다.\n로그인 후 문의하신 질문과 답변 내역을 안전하게 따로 관리하실 수 있습니다.\n\n로그인 페이지로 이동하시겠습니까?`
+      );
+      if (confirmLogin) {
+        router.push("/auth/login?redirect=/mypage/inquiry");
+      }
+    }
+  };
+
   // ESC 키로 드로어 및 팝오버 닫기
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -151,19 +176,20 @@ export default function Gem_Header() {
               <Phone className="w-3.5 h-3.5 text-[#0052CC]" />
               <span className="text-slate-400">대표전화</span>
               <a
-                href="tel:1666-6675"
+                href="tel:1666-1675"
                 className="text-[#071E54] font-extrabold hover:text-[#0052CC] transition-colors"
               >
-                1666-6675
+                1666-1675
               </a>
             </div>
             <span className="text-slate-200">|</span>
-            <Link
-              href="/community/inquiry"
-              className="text-slate-600 hover:text-[#0052CC] transition-colors"
+            <button
+              type="button"
+              onClick={handleMemberInquiryClick}
+              className="text-slate-600 hover:text-[#0052CC] transition-colors cursor-pointer"
             >
               1:1문의
-            </Link>
+            </button>
             <span className="text-slate-200">|</span>
             <Link
               href="/auth/login"
@@ -353,18 +379,35 @@ export default function Gem_Header() {
                                   <Sparkles className="w-4 h-4" />
                                   <span>{item.curation.badge || "특화 안내"}</span>
                                 </div>
-                                <h4 className="text-[14px] font-black text-slate-900 leading-snug mb-1.5">
-                                  {item.curation.title}
-                                </h4>
-                                <p className="text-[12px] text-slate-600 leading-relaxed">
+                                {item.curation.requireAuthTitle ? (
+                                  <button
+                                    type="button"
+                                    onClick={handleMemberInquiryClick}
+                                    className="text-left group/title flex items-center justify-between w-full mb-1.5 cursor-pointer"
+                                    title="회원 전용 1:1 온라인상담 (로그인 필요)"
+                                  >
+                                    <h4 className="text-[14px] font-black text-slate-900 group-hover/title:text-[#0052CC] transition-colors leading-snug">
+                                      {item.curation.title}
+                                    </h4>
+                                    <span className="text-[10px] font-semibold text-[#0052CC] bg-blue-100/70 px-1.5 py-0.5 rounded border border-blue-200 ml-1 whitespace-nowrap">
+                                      회원전용
+                                    </span>
+                                  </button>
+                                ) : (
+                                  <h4 className="text-[14px] font-black text-slate-900 leading-snug mb-1.5">
+                                    {item.curation.title}
+                                  </h4>
+                                )}
+                                <p className="text-[11.5px] text-slate-500 leading-relaxed break-keep">
                                   {item.curation.description}
                                 </p>
                               </div>
 
+                              {/* 하단: 비회원 온라인문의 바로가기 버튼 */}
                               <Link
                                 href={item.curation.href}
                                 onClick={() => setActiveMenuId(null)}
-                                className="mt-4 inline-flex items-center justify-between w-full px-3 py-2 bg-white hover:bg-[#0052CC] text-[#0052CC] hover:text-white rounded-lg text-xs font-bold transition-all shadow-sm group/cur"
+                                className="mt-4 inline-flex items-center justify-between w-full px-3 py-2 bg-white hover:bg-[#0052CC] text-[#0052CC] hover:text-white rounded-lg text-xs font-bold transition-all shadow-sm group/cur cursor-pointer"
                               >
                                 <span>{item.curation.actionText}</span>
                                 <ArrowRight className="w-3.5 h-3.5 group-hover/cur:translate-x-0.5 transition-transform" />
@@ -590,12 +633,16 @@ export default function Gem_Header() {
               회원가입
             </Link>
             <span className="text-slate-300">|</span>
-            <Link href="/community/inquiry" onClick={() => setMobileMenuOpen(false)}>
+            <button
+              type="button"
+              onClick={handleMemberInquiryClick}
+              className="text-slate-600 hover:text-[#0052CC] transition-colors cursor-pointer"
+            >
               1:1문의
-            </Link>
+            </button>
             <span className="text-slate-300">|</span>
-            <a href="tel:1666-6675" className="text-[#0052CC] font-bold">
-              1666-6675
+            <a href="tel:1666-1675" className="text-[#0052CC] font-bold">
+              1666-1675
             </a>
           </div>
         </div>
