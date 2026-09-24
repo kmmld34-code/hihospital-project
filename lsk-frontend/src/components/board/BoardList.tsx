@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+const parseSubject = (str: any) => { if (!str) return ''; try { const obj = JSON.parse(str); return obj.ko || str; } catch { return str; } };
+
 export default function BoardList({ boardId }: { boardId: string }) {
   const [list, setList] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
@@ -42,7 +44,7 @@ export default function BoardList({ boardId }: { boardId: string }) {
     );
   }
 
-  const canWrite = currentUserLevel >= (config.bo_write_level || 1);
+  const canWrite = boardId === 'blog' ? false : (currentUserLevel >= (config.bo_write_level || 1));
   const isGallery = boardId === "blog" || config.bo_gallery_cols > 0;
 
   return (
@@ -50,7 +52,7 @@ export default function BoardList({ boardId }: { boardId: string }) {
       {/* 게시판 상단 헤더 및 버튼 */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b-2 border-gray-900 pb-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold text-gray-900">{config.bo_subject || boardId.toUpperCase()}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{parseSubject(config.bo_subject) || boardId.toUpperCase()}</h2>
           <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded-full border border-gray-200">
             총 {total}건
           </span>
