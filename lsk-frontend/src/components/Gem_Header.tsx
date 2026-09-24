@@ -41,6 +41,11 @@ import { GEM_EXTENDED_NAV_ITEMS, GEM_SITEMAP_NAV_ITEMS } from "@/data/navigation
  */
 
 export default function Gem_Header() {
+  const [isLogin, setIsLogin] = useState(false);
+  useEffect(() => {
+    setIsLogin(!!getToken());
+  }, []);
+
   const router = useRouter();
 
   // 1. 상태 관리
@@ -102,12 +107,8 @@ export default function Gem_Header() {
     setActiveMenuId(null);
     setMobileMenuOpen(false);
 
-    // 로그인 여부 검증 (로컬 스토리지 토큰 또는 로그인 플래그)
-    const isLoggedIn = typeof window !== "undefined" && (
-      Boolean(localStorage.getItem("access_token")) ||
-      Boolean(localStorage.getItem("is_logged_in")) ||
-      Boolean(document.cookie.includes("user_session"))
-    );
+    // 로그인 여부 검증 (로컬 스토리지 토큰)
+    const isLoggedIn = typeof window !== "undefined" && Boolean(localStorage.getItem("auth_token"));
 
     if (isLoggedIn) {
       router.push("/mypage/inquiry");
@@ -626,13 +627,21 @@ export default function Gem_Header() {
 
           {/* 모바일 하단 로그인/회원가입/예약 바 */}
           <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-around text-xs font-semibold text-slate-600">
-            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-              로그인
-            </Link>
-            <span className="text-slate-300">|</span>
-            <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
-              회원가입
-            </Link>
+            {isLogin ? (
+              <>
+                <Link href="/mypage" onClick={() => setMobileMenuOpen(false)}>마이페이지</Link>
+                <span className="text-slate-300">|</span>
+                <Link href="/mypage/edit" onClick={() => setMobileMenuOpen(false)}>정보수정</Link>
+                <span className="text-slate-300">|</span>
+                <button type="button" onClick={() => { setMobileMenuOpen(false); removeToken(); setIsLogin(false); window.location.href='/'; }} className="text-slate-600 hover:text-[#0052CC] transition-colors cursor-pointer">로그아웃</button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>로그인</Link>
+                <span className="text-slate-300">|</span>
+                <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>회원가입</Link>
+              </>
+            )}
             <span className="text-slate-300">|</span>
             <button
               type="button"
