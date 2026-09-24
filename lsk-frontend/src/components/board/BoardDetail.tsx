@@ -49,7 +49,7 @@ export default function BoardDetail({ boardId, postId }: { boardId: string, post
         </div>
       </div>
       <div 
-        className="py-8 min-h-[300px] text-gray-800 leading-relaxed whitespace-pre-wrap"
+        className="py-10 min-h-[400px] text-gray-800 text-[17px] sm:text-[18px] leading-[1.9] tracking-tight whitespace-pre-wrap word-break-keep-all [&_p]:mb-6 [&_img]:max-w-full [&_img]:mx-auto [&_img]:rounded-md [&_h1]:text-3xl [&_h2]:text-2xl [&_h3]:text-xl [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-bold [&_h1]:mb-6 [&_h2]:mb-5 [&_h3]:mb-4"
         dangerouslySetInnerHTML={{ __html: fixHtmlContent(post.wr_content) }}
       />
       <div className="mt-10 border-t border-gray-200 pt-6 text-right">
