@@ -8,21 +8,10 @@ import Gem_DementiaPage from "@/components/Gem_DementiaPage";
 import Gem_StrokePage from "@/components/Gem_StrokePage";
 import Gem_NeuropathyPage from "@/components/Gem_NeuropathyPage";
 import Gem_BlockRenderer from "@/components/Gem_BlockRenderer";
+import BoardList from "@/components/board/BoardList";
+import Gem_SubNav from "@/components/Gem_SubNav";
 import { CATEGORY_HUB_DATA } from "@/data/categoryHubData";
 import { query, isDbConfigured } from "@/lib/gem_db";
-
-/**
- * ==============================================================================
- * [Next.js App Router] 서브페이지 통합 동적 라우트 (src/app/[category]/[slug]/page.tsx)
- * ==============================================================================
- * 1. 뇌신경센터 4대 클리닉 특화 전용 페이지 100% 안전 보존 (원본 유지)
- * 2. RDBMS(그누보드7 g7_pages)에 저장된 블록 데이터 우선 조회:
- *    - 원격 Vercel 및 로컬 환경이 동일한 DB를 바라보며 실시간 동기화
- * 3. 2중 폴백 (Dual Fallback):
- *    - DB에 없거나 미설정 시 로컬 JSON 파일(data/subpages) 조회
- *    - 둘 다 없을 시 기존 내용관리 Gem_SubpageViewer로 안전하게 렌더링
- * ==============================================================================
- */
 
 interface SubpageRouteProps {
   params: {
@@ -34,105 +23,78 @@ interface SubpageRouteProps {
 export async function generateMetadata({ params }: SubpageRouteProps): Promise<Metadata> {
   const { category, slug } = params;
   const hubInfo = CATEGORY_HUB_DATA[category];
-  const item = hubInfo?.items.find((i) => i.id === slug);
-
-  if (category === "neurosurgery" && slug === "headache-dizziness") {
-    return { title: "두통·어지럼증 클리닉 | 인천하이병원 뇌신경센터", description: "단순 두통 외 위험한 뇌질환 신호 감별. 첨단 3.0T MRI 정밀 진단과 신경과 전문의 맞춤 치료." };
-  }
-  if (category === "neurosurgery" && slug === "dementia") {
-    return { title: "치매 클리닉 | 인천하이병원 뇌신경센터", description: "기억력 저하, 성격 변화 등 초기 진단부터 보건복지부 예방수칙, 국가 지원 제도까지. 인천하이병원 뇌신경센터 치매 통합 케어 솔루션." };
-  }
-  if (category === "neurosurgery" && slug === "stroke") {
-    return { title: "뇌졸중(중풍) 클리닉 | 인천하이병원 뇌신경센터", description: "갑작스러운 편측 마비, 언어 장애 등 뇌졸중 경고 신호와 골든타임 관리. 첨단 3.0T MRI 정밀 검진과 신경과 전문의 1:1 맞춤 진료." };
-  }
-  if (category === "neurosurgery" && slug === "peripheral-neuropathy") {
-    return { title: "말초신경병 클리닉 | 인천하이병원 뇌신경센터", description: "손발저림, 화끈거림, 당뇨병성 신경병증 및 손목터널증후군. 신경전도(NCS) 및 근전도(EMG) 정밀 검사 기반 맞춤 치료, 인천하이병원 뇌신경센터." };
-  }
-
+  const item = hubInfo?.items?.find((i: any) => i.id === slug);
   const title = item ? `${item.name} | 인천하이병원 ${hubInfo?.title || "진료과"}` : "진료안내 | 인천하이병원";
-  const description = item ? `${item.tagline} - 인천하이병원 ${item.name} 전문 진료 안내.` : "인천하이병원 전문의 협진 맞춤 진료 안내입니다.";
-
-  return { title, description };
+  return { title, description: "인천하이병원 전문의 협진 맞춤 진료 안내입니다." };
 }
 
-/**
- * [서브페이지 블록 데이터 조회 함수]
- * 1차: 그누보드7 g7_pages DB 조회 (원격/로컬 실시간 동기화)
- * 2차: 로컬 JSON 파일 시스템 폴백 (기존 데이터 보존)
- */
 async function getSubpageBuilderData(category: string, slug: string) {
   const pageKey = `${category}-${slug}`;
-
-  // 1. 그누보드7 g7_pages DB 조회
   if (isDbConfigured()) {
     try {
-      const rows: any[] = await query(
-        "SELECT slug, title, content FROM g7_pages WHERE slug = ? LIMIT 1",
-        [pageKey]
-      );
-
+      const rows: any[] = await query("SELECT slug, title, content FROM g7_pages WHERE slug = ? LIMIT 1", [pageKey]);
       if (rows && rows.length > 0) {
         const row = rows[0];
-        
         let parsedTitle = row.title;
         try {
           const titleObj = JSON.parse(row.title);
           parsedTitle = titleObj.ko || titleObj.en || row.title;
         } catch (e) {}
-
         const blocks = typeof row.content === "string" ? JSON.parse(row.content) : row.content;
-        
         if (blocks && Array.isArray(blocks) && blocks.length > 0) {
-          return {
-            category_name: CATEGORY_HUB_DATA[category]?.title || category, // 주메뉴명 fallback
-            subpage_name: parsedTitle,
-            blocks: blocks,
-          };
+          return { category_name: CATEGORY_HUB_DATA[category]?.title || category, subpage_name: parsedTitle, blocks: blocks };
         }
       }
     } catch (dbErr) {
-      console.warn("[MySQL Page Fetch Fallback] DB 조회 실패, 파일 스토리지로 폴백:", dbErr);
+      console.warn("[MySQL Fetch Fallback]", dbErr);
     }
   }
 
-  // 2. 파일 시스템 기반 영구 스토리지 폴백
   try {
     const storageDir = path.join(process.cwd(), "data", "subpages");
-    const safeKey = `${category}-${slug}.json`; // 파일명 규약도 통일
-    const filePath = path.join(storageDir, safeKey);
-
+    let filePath = path.join(storageDir, `${category}-${slug}.json`);
+    if (!fs.existsSync(filePath)) filePath = path.join(storageDir, `${category}___${slug}.json`);
     if (fs.existsSync(filePath)) {
       const fileContent = fs.readFileSync(filePath, "utf-8");
       const record = JSON.parse(fileContent);
-      if (record && record.blocks && record.blocks.length > 0) {
-        return record;
-      }
-    } else {
-       // 이전 파일명 규약 (___) 호환성 유지
-       const oldFilePath = path.join(storageDir, `${category}___${slug}.json`);
-       if (fs.existsSync(oldFilePath)) {
-         const fileContent = fs.readFileSync(oldFilePath, "utf-8");
-         const record = JSON.parse(fileContent);
-         if (record && record.blocks && record.blocks.length > 0) {
-           return record;
-         }
-       }
+      if (record && record.blocks && record.blocks.length > 0) return record;
     }
-  } catch (err) {
-    console.error("getSubpageBuilderData file fallback error:", err);
-  }
-
+  } catch (err) {}
   return null;
 }
 
 export default async function DynamicSubpage({ params }: SubpageRouteProps) {
   const { category, slug } = params;
 
+  // [핵심 변경] 커뮤니티 카테고리는 무조건 게시판 리스트 렌더링으로 인터셉트!
+  // Catch-all 라우팅 충돌 방지를 위해 여기서 직접 분기 처리
+  if (category === "community") {
+    // 예외: 비급여 진료비용 안내 등 일반 페이지로 처리할 슬러그가 있다면 여기서 제외 가능.
+    // 하지만 현재는 모든 커뮤니티 하위 메뉴를 게시판으로 취급
+    const hubInfo = CATEGORY_HUB_DATA["community"];
+    return (
+      <div className="w-full bg-white min-h-screen">
+        <Gem_SubNav category="community" currentSlug={slug} />
+        <div className="pt-16 pb-8 bg-gray-50 border-b border-gray-200 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 uppercase">
+            {hubInfo?.title || "커뮤니티"}
+          </h1>
+          <p className="text-gray-500 mt-2">
+            {hubInfo?.description || "인천하이병원의 새로운 소식을 전해드립니다."}
+          </p>
+        </div>
+        <BoardList boardId={slug} />
+      </div>
+    );
+  }
+
+  // 기존 특화 페이지
   if (category === "neurosurgery" && slug === "headache-dizziness") { return <Gem_HeadacheDizzinessPage />; }
   if (category === "neurosurgery" && slug === "dementia") { return <Gem_DementiaPage />; }
   if (category === "neurosurgery" && slug === "stroke") { return <Gem_StrokePage />; }
   if (category === "neurosurgery" && slug === "peripheral-neuropathy") { return <Gem_NeuropathyPage />; }
 
+  // 블록 빌더 데이터
   const builderData = await getSubpageBuilderData(category, slug);
   if (builderData) {
     return (
@@ -146,6 +108,7 @@ export default async function DynamicSubpage({ params }: SubpageRouteProps) {
     );
   }
 
+  // 폴백 UI
   return (
     <div className="w-full min-h-screen bg-white">
       <Gem_SubpageViewer category={category} slug={slug} />
