@@ -107,17 +107,17 @@ export default function Gem_Header() {
     setActiveMenuId(null);
     setMobileMenuOpen(false);
 
-    // 로그인 여부 검증 (로컬 스토리지 토큰)
+    // 로그인 여부 검증 (로컬 스토리지 auth_token)
     const isLoggedIn = typeof window !== "undefined" && Boolean(localStorage.getItem("auth_token"));
 
     if (isLoggedIn) {
-      router.push("/mypage/inquiry");
+      router.push("/community/online");
     } else {
       const confirmLogin = window.confirm(
         `1:1문의는 회원 전용 서비스입니다.\n로그인 후 문의하신 질문과 답변 내역을 안전하게 따로 관리하실 수 있습니다.\n\n로그인 페이지로 이동하시겠습니까?`
       );
       if (confirmLogin) {
-        router.push("/login?redirect=/mypage/inquiry");
+        router.push("/login?redirect=/community/online");
       }
     }
   };
@@ -193,19 +193,21 @@ export default function Gem_Header() {
               1:1문의
             </button>
             <span className="text-slate-200">|</span>
-            <Link
-              href="/login"
-              className="text-slate-600 hover:text-[#0052CC] transition-colors"
-            >
-              로그인
-            </Link>
-            <span className="text-slate-200">|</span>
-            <Link
-              href="/auth/register"
-              className="text-slate-600 hover:text-[#0052CC] transition-colors"
-            >
-              회원가입
-            </Link>
+            {isLogin ? (
+              <>
+                <Link href="/mypage" className="text-slate-600 hover:text-[#0052CC] transition-colors">마이페이지</Link>
+                <span className="text-slate-200">|</span>
+                <Link href="/mypage/edit" className="text-slate-600 hover:text-[#0052CC] transition-colors">정보수정</Link>
+                <span className="text-slate-200">|</span>
+                <button type="button" onClick={() => { logout(); setIsLogin(false); }} className="text-slate-600 hover:text-[#0052CC] transition-colors cursor-pointer">로그아웃</button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-slate-600 hover:text-[#0052CC] transition-colors">로그인</Link>
+                <span className="text-slate-200">|</span>
+                <Link href="/auth/register" className="text-slate-600 hover:text-[#0052CC] transition-colors">회원가입</Link>
+              </>
+            )}
             <Link
               href="/appointments/my"
               className="w-6 h-6 rounded-full bg-[#0052CC] text-white flex items-center justify-center hover:bg-[#0043A6] transition-colors ml-1 shadow-sm"
@@ -633,7 +635,7 @@ export default function Gem_Header() {
                 <span className="text-slate-300">|</span>
                 <Link href="/mypage/edit" onClick={() => setMobileMenuOpen(false)}>정보수정</Link>
                 <span className="text-slate-300">|</span>
-                <button type="button" onClick={() => { setMobileMenuOpen(false); removeToken(); setIsLogin(false); window.location.href='/'; }} className="text-slate-600 hover:text-[#0052CC] transition-colors cursor-pointer">로그아웃</button>
+                <button type="button" onClick={() => { setMobileMenuOpen(false); logout(); setIsLogin(false); }} className="cursor-pointer">로그아웃</button>
               </>
             ) : (
               <>
