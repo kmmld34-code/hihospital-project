@@ -6,13 +6,16 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:migrate": "node database/migrate_and_seed.js"
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "dotenv": "^18.0.3",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.439.0",
+    "mysql2": "^3.24.4",
     "next": "^14.2.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

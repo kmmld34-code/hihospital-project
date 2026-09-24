@@ -9,14 +9,18 @@ import Gem_StrokePage from "@/components/Gem_StrokePage";
 import Gem_NeuropathyPage from "@/components/Gem_NeuropathyPage";
 import Gem_BlockRenderer from "@/components/Gem_BlockRenderer";
 import { CATEGORY_HUB_DATA } from "@/data/categoryHubData";
+import { query, isDbConfigured } from "@/lib/gem_db";
 
 /**
  * ==============================================================================
  * [Next.js App Router] 서브페이지 통합 동적 라우트 (src/app/[category]/[slug]/page.tsx)
  * ==============================================================================
  * 1. 뇌신경센터 4대 클리닉 특화 전용 페이지 100% 안전 보존 (원본 유지)
- * 2. RDBMS(블록 빌더)에 저장된 블록 데이터가 있을 경우: Gem_BlockRenderer로 동적 렌더링!
- * 3. 블록 데이터가 없을 경우: 기존 내용관리 Gem_SubpageViewer 렌더링 (안전한 폴백)
+ * 2. RDBMS(카페24 MySQL)에 저장된 블록 데이터 우선 조회:
+ *    - 원격 Vercel 및 로컬 환경이 동일한 DB를 바라보며 실시간 동기화
+ * 3. 2중 폴백 (Dual Fallback):
+ *    - DB에 없거나 미설정 시 로컬 JSON 파일(data/subpages) 조회
+ *    - 둘 다 없을 시 기존 내용관리 Gem_SubpageViewer로 안전하게 렌더링
  * ==============================================================================
  */
 
@@ -75,8 +79,39 @@ export async function generateMetadata({ params }: SubpageRouteProps): Promise<M
   };
 }
 
-// RDBMS / 로컬 스토리지에 저장된 서브페이지 블록 데이터 조회 함수
-function getSubpageBuilderData(category: string, slug: string) {
+/**
+ * [서브페이지 블록 데이터 조회 함수]
+ * 1차: 카페24 MySQL DB 조회 (원격/로컬 실시간 동기화)
+ * 2차: 로컬 JSON 파일 시스템 폴백 (기존 데이터 보존)
+ */
+async function getSubpageBuilderData(category: string, slug: string) {
+  const pageKey = `${category}/${slug}`;
+
+  // 1. 카페24 MySQL DB 조회
+  if (isDbConfigured()) {
+    try {
+      const rows: any[] = await query(
+        "SELECT category_name, subpage_name, blocks FROM gem_subpage_contents WHERE page_key = ? LIMIT 1",
+        [pageKey]
+      );
+
+      if (rows && rows.length > 0) {
+        const row = rows[0];
+        const blocks = typeof row.blocks === "string" ? JSON.parse(row.blocks) : row.blocks;
+        if (blocks && Array.isArray(blocks) && blocks.length > 0) {
+          return {
+            category_name: row.category_name,
+            subpage_name: row.subpage_name,
+            blocks: blocks,
+          };
+        }
+      }
+    } catch (dbErr) {
+      console.warn("[MySQL Page Fetch Fallback] DB 조회 실패, 파일 스토리지로 폴백:", dbErr);
+    }
+  }
+
+  // 2. 파일 시스템 기반 영구 스토리지 폴백 (data/subpages/*.json)
   try {
     const storageDir = path.join(process.cwd(), "data", "subpages");
     const safeKey = `${category}___${slug}.json`;
@@ -90,12 +125,13 @@ function getSubpageBuilderData(category: string, slug: string) {
       }
     }
   } catch (err) {
-    console.error("getSubpageBuilderData error:", err);
+    console.error("getSubpageBuilderData file fallback error:", err);
   }
+
   return null;
 }
 
-export default function DynamicSubpage({ params }: SubpageRouteProps) {
+export default async function DynamicSubpage({ params }: SubpageRouteProps) {
   const { category, slug } = params;
 
   // 1. 뇌신경 4대 특화 페이지 (대표님 만족 디자인 100% 안전 보존)
@@ -112,8 +148,8 @@ export default function DynamicSubpage({ params }: SubpageRouteProps) {
     return <Gem_NeuropathyPage />;
   }
 
-  // 2. RDBMS(블록 빌더)에 저장된 블록 데이터 확인
-  const builderData = getSubpageBuilderData(category, slug);
+  // 2. RDBMS(블록 빌더)에 저장된 블록 데이터 확인 (비동기 DB/파일 조회)
+  const builderData = await getSubpageBuilderData(category, slug);
   if (builderData) {
     return (
       <Gem_BlockRenderer
