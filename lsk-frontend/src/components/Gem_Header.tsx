@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { getToken, removeToken } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { 
   Phone, 

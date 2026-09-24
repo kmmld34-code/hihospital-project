@@ -14,7 +14,6 @@ export async function GET(request: NextRequest, { params }: { params: { boardId:
     const action = searchParams.get("action") || "list";
     const postId = searchParams.get("postId") || "";
     
-    // Vercel 동적 IP 차단(44.x.x.x) 문제를 우회하기 위해 카페24 서버 내부에 올려둔 api_board.php 로 통신
     const apiUrl = `${CAFE24_API_URL}?board=${boardId}&page=${page}&limit=${limit}&action=${action}&postId=${postId}`;
     const response = await fetch(apiUrl, { cache: 'no-store' });
     
@@ -32,5 +31,22 @@ export async function GET(request: NextRequest, { params }: { params: { boardId:
 }
 
 export async function POST(request: NextRequest, { params }: { params: { boardId: string } }) {
-  return NextResponse.json({ error: "프론트엔드 글쓰기는 현재 개발 중입니다." }, { status: 501 });
+  try {
+    const { boardId } = params;
+    const body = await request.json();
+    
+    const apiUrl = `${CAFE24_API_URL}?board=${boardId}`;
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      cache: 'no-store'
+    });
+    
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error: any) {
+    console.error(`[API] Board Write Proxy Error (${params?.boardId}):`, error);
+    return NextResponse.json({ success: false, error: '서버 통신 에러가 발생했습니다.' }, { status: 500 });
+  }
 }
