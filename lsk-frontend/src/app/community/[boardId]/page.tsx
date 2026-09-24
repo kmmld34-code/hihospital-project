@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import React from 'react';
 import BoardList from '@/components/board/BoardList';
 import { CATEGORY_HUB_DATA } from '@/data/categoryHubData';
