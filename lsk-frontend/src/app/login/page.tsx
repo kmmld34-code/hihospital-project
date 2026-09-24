@@ -47,8 +47,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md mx-auto z-10">
         <div className="text-center mb-10">
           {/* 로고 대신 병원 텍스트 및 신뢰감 주는 헤드라인 */}
-          <h2 className="text-4xl font-extrabold text-white tracking-tight">인천하이병원</h2>
-          <p className="mt-3 text-blue-100 text-lg">따뜻한 소통, 정확한 진단</p>
+          <h2 className="text-4xl font-extrabold text-[#00479A] tracking-tight">인천하이병원</h2>
+          <p className="mt-3 text-blue-600 text-lg font-medium">따뜻한 소통, 정확한 진단</p>
         </div>
 
         <div className="bg-white py-10 px-8 shadow-2xl rounded-2xl border border-gray-100">
