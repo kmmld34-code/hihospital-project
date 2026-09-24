@@ -115,7 +115,7 @@ export default function Gem_Header() {
         `1:1문의는 회원 전용 서비스입니다.\n로그인 후 문의하신 질문과 답변 내역을 안전하게 따로 관리하실 수 있습니다.\n\n로그인 페이지로 이동하시겠습니까?`
       );
       if (confirmLogin) {
-        router.push("/auth/login?redirect=/mypage/inquiry");
+        router.push("/login?redirect=/mypage/inquiry");
       }
     }
   };
@@ -192,7 +192,7 @@ export default function Gem_Header() {
             </button>
             <span className="text-slate-200">|</span>
             <Link
-              href="/auth/login"
+              href="/login"
               className="text-slate-600 hover:text-[#0052CC] transition-colors"
             >
               로그인
@@ -625,7 +625,7 @@ export default function Gem_Header() {
 
           {/* 모바일 하단 로그인/회원가입/예약 바 */}
           <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-around text-xs font-semibold text-slate-600">
-            <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
               로그인
             </Link>
             <span className="text-slate-300">|</span>

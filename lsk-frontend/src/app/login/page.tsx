@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { setToken } from '@/lib/auth';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [mbId, setMbId] = useState('');
@@ -16,7 +17,6 @@ export default function LoginPage() {
     setErrorMsg('');
 
     try {
-      // 프록시 API (next.js 라우트)를 통해 카페24 백엔드와 통신 예정
       const res = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -26,13 +26,11 @@ export default function LoginPage() {
       const data = await res.json();
       
       if (data.success) {
-        // 토큰(또는 세션 식별자) 저장 및 등급(level) 저장
         setToken(data.data.token, data.data.member);
-        alert(`${data.data.member.mb_name}님 환영합니다!`);
         router.push('/');
         router.refresh();
       } else {
-        setErrorMsg(data.error || '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
+        setErrorMsg(data.error || '아이디 또는 비밀번호가 일치하지 않습니다.');
       }
     } catch (err) {
       setErrorMsg('서버와 통신 중 오류가 발생했습니다.');
@@ -42,49 +40,104 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">로그인</h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          인천하이병원 홈페이지에 오신 것을 환영합니다.
-        </p>
-      </div>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* 배경 장식 패턴 (인천하이병원 브랜드 컬러 연계) */}
+      <div className="absolute top-0 left-0 w-full h-96 bg-[#00479A] skew-y-3 transform origin-top-left -z-10 opacity-90"></div>
+      
+      <div className="w-full max-w-md mx-auto z-10">
+        <div className="text-center mb-10">
+          {/* 로고 대신 병원 텍스트 및 신뢰감 주는 헤드라인 */}
+          <h2 className="text-4xl font-extrabold text-white tracking-tight">인천하이병원</h2>
+          <p className="mt-3 text-blue-100 text-lg">따뜻한 소통, 정확한 진단</p>
+        </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white py-10 px-8 shadow-2xl rounded-2xl border border-gray-100">
+          <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">로그인</h3>
+          
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
-              <label htmlFor="mb_id" className="block text-sm font-medium text-gray-700">아이디</label>
-              <div className="mt-1">
-                <input id="mb_id" name="mb_id" type="text" required value={mbId} onChange={(e) => setMbId(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+              <label htmlFor="mb_id" className="block text-sm font-semibold text-gray-700">
+                아이디
+              </label>
+              <div className="mt-2">
+                <input
+                  id="mb_id"
+                  name="mb_id"
+                  type="text"
+                  required
+                  value={mbId}
+                  onChange={(e) => setMbId(e.target.value)}
+                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00479A] focus:border-transparent transition-all"
+                  placeholder="아이디를 입력하세요"
+                />
               </div>
             </div>
 
             <div>
-              <label htmlFor="mb_password" className="block text-sm font-medium text-gray-700">비밀번호</label>
-              <div className="mt-1">
-                <input id="mb_password" name="mb_password" type="password" required value={mbPassword} onChange={(e) => setMbPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+              <div className="flex items-center justify-between">
+                <label htmlFor="mb_password" className="block text-sm font-semibold text-gray-700">
+                  비밀번호
+                </label>
+                <Link href="#" className="text-sm font-medium text-[#00479A] hover:text-blue-800 transition-colors">
+                  비밀번호 찾기
+                </Link>
+              </div>
+              <div className="mt-2">
+                <input
+                  id="mb_password"
+                  name="mb_password"
+                  type="password"
+                  required
+                  value={mbPassword}
+                  onChange={(e) => setMbPassword(e.target.value)}
+                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00479A] focus:border-transparent transition-all"
+                  placeholder="비밀번호를 입력하세요"
+                />
               </div>
             </div>
 
             {errorMsg && (
-              <div className="text-red-500 text-sm font-medium">{errorMsg}</div>
+              <div className="rounded-md bg-red-50 p-4 border border-red-100">
+                <div className="flex">
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-red-800">{errorMsg}</h3>
+                  </div>
+                </div>
+              </div>
             )}
 
-            <div>
-              <button type="submit" disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300">
-                {loading ? '로그인 중...' : '로그인'}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-base font-bold text-white bg-[#00479A] hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00479A] disabled:opacity-70 transition-all transform active:scale-[0.99]"
+              >
+                {loading ? '인증 진행 중...' : '로그인'}
               </button>
             </div>
           </form>
-          
-          <div className="mt-6 text-center">
-            <a href="/register" className="text-sm text-blue-600 hover:text-blue-500 font-medium">회원가입 하기</a>
+
+          <div className="mt-8">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-3 bg-white text-gray-500">아직 회원이 아니신가요?</span>
+              </div>
+            </div>
+
+            <div className="mt-6 text-center">
+              <Link href="/register" className="inline-flex items-center px-4 py-2 text-sm font-bold text-[#00479A] bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                회원가입 하기 &rarr;
+              </Link>
+            </div>
           </div>
         </div>
+        
+        <p className="text-center text-sm text-gray-400 mt-8">
+          &copy; INCHEON HI HOSPITAL. All rights reserved.
+        </p>
       </div>
     </div>
   );
