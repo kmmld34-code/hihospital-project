@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { isAdmin } from '@/lib/auth';
 
 const parseSubject = (str: any) => { if (!str) return ''; try { const obj = JSON.parse(str); return obj.ko || str; } catch { return str; } };
 
