@@ -199,7 +199,7 @@ export default function Gem_Header() {
                 <span className="text-slate-200">|</span>
                 <Link href="/mypage/edit" className="text-slate-600 hover:text-[#0052CC] transition-colors">정보수정</Link>
                 <span className="text-slate-200">|</span>
-                <button type="button" onClick={() => { logout(); setIsLogin(false); }} className="text-slate-600 hover:text-[#0052CC] transition-colors cursor-pointer">로그아웃</button>
+                <button type="button" onClick={() => { logout(); setIsLogin(false); router.push('/'); }} className="text-slate-600 hover:text-[#0052CC] transition-colors cursor-pointer">로그아웃</button>
               </>
             ) : (
               <>
@@ -635,7 +635,7 @@ export default function Gem_Header() {
                 <span className="text-slate-300">|</span>
                 <Link href="/mypage/edit" onClick={() => setMobileMenuOpen(false)}>정보수정</Link>
                 <span className="text-slate-300">|</span>
-                <button type="button" onClick={() => { setMobileMenuOpen(false); logout(); setIsLogin(false); }} className="cursor-pointer">로그아웃</button>
+                <button type="button" onClick={() => { setMobileMenuOpen(false); logout(); setIsLogin(false); router.push('/'); }} className="cursor-pointer">로그아웃</button>
               </>
             ) : (
               <>
