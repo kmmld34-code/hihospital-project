@@ -9,7 +9,6 @@ import Gem_StrokePage from "@/components/Gem_StrokePage";
 import Gem_NeuropathyPage from "@/components/Gem_NeuropathyPage";
 import Gem_BlockRenderer from "@/components/Gem_BlockRenderer";
 import BoardList from "@/components/board/BoardList";
-import Gem_SubNav from "@/components/Gem_SubNav";
 import { CATEGORY_HUB_DATA } from "@/data/categoryHubData";
 import { query, isDbConfigured } from "@/lib/gem_db";
 
@@ -74,8 +73,7 @@ export default async function DynamicSubpage({ params }: SubpageRouteProps) {
     const hubInfo = CATEGORY_HUB_DATA["community"];
     return (
       <div className="w-full bg-white min-h-screen">
-        <Gem_SubNav category="community" currentSlug={slug} />
-        <div className="pt-16 pb-8 bg-gray-50 border-b border-gray-200 text-center">
+                <div className="pt-16 pb-8 bg-gray-50 border-b border-gray-200 text-center">
           <h1 className="text-3xl font-bold text-gray-900 uppercase">
             {hubInfo?.title || "커뮤니티"}
           </h1>
