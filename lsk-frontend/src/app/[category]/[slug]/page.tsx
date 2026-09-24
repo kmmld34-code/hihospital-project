@@ -16,7 +16,7 @@ import { query, isDbConfigured } from "@/lib/gem_db";
  * [Next.js App Router] 서브페이지 통합 동적 라우트 (src/app/[category]/[slug]/page.tsx)
  * ==============================================================================
  * 1. 뇌신경센터 4대 클리닉 특화 전용 페이지 100% 안전 보존 (원본 유지)
- * 2. RDBMS(카페24 MySQL)에 저장된 블록 데이터 우선 조회:
+ * 2. RDBMS(그누보드7 g7_pages)에 저장된 블록 데이터 우선 조회:
  *    - 원격 Vercel 및 로컬 환경이 동일한 DB를 바라보며 실시간 동기화
  * 3. 2중 폴백 (Dual Fallback):
  *    - DB에 없거나 미설정 시 로컬 JSON 파일(data/subpages) 조회
@@ -36,72 +36,56 @@ export async function generateMetadata({ params }: SubpageRouteProps): Promise<M
   const hubInfo = CATEGORY_HUB_DATA[category];
   const item = hubInfo?.items.find((i) => i.id === slug);
 
-  // 1. 두통·어지럼증 클리닉 SEO 메타데이터
   if (category === "neurosurgery" && slug === "headache-dizziness") {
-    return {
-      title: "두통·어지럼증 클리닉 | 인천하이병원 뇌신경센터",
-      description: "단순 두통 외 위험한 뇌질환 신호 감별. 첨단 3.0T MRI 정밀 진단과 신경과 전문의 맞춤 치료.",
-    };
+    return { title: "두통·어지럼증 클리닉 | 인천하이병원 뇌신경센터", description: "단순 두통 외 위험한 뇌질환 신호 감별. 첨단 3.0T MRI 정밀 진단과 신경과 전문의 맞춤 치료." };
   }
-
-  // 2. 치매 클리닉 SEO 메타데이터
   if (category === "neurosurgery" && slug === "dementia") {
-    return {
-      title: "치매 클리닉 | 인천하이병원 뇌신경센터",
-      description: "기억력 저하, 성격 변화 등 초기 진단부터 보건복지부 예방수칙, 국가 지원 제도까지. 인천하이병원 뇌신경센터 치매 통합 케어 솔루션.",
-    };
+    return { title: "치매 클리닉 | 인천하이병원 뇌신경센터", description: "기억력 저하, 성격 변화 등 초기 진단부터 보건복지부 예방수칙, 국가 지원 제도까지. 인천하이병원 뇌신경센터 치매 통합 케어 솔루션." };
   }
-
-  // 3. 뇌졸중(중풍) 클리닉 SEO 메타데이터
   if (category === "neurosurgery" && slug === "stroke") {
-    return {
-      title: "뇌졸중(중풍) 클리닉 | 인천하이병원 뇌신경센터",
-      description: "갑작스러운 편측 마비, 언어 장애 등 뇌졸중 경고 신호와 골든타임 관리. 첨단 3.0T MRI 정밀 검진과 신경과 전문의 1:1 맞춤 진료.",
-    };
+    return { title: "뇌졸중(중풍) 클리닉 | 인천하이병원 뇌신경센터", description: "갑작스러운 편측 마비, 언어 장애 등 뇌졸중 경고 신호와 골든타임 관리. 첨단 3.0T MRI 정밀 검진과 신경과 전문의 1:1 맞춤 진료." };
   }
-
-  // 4. 말초신경병 클리닉 SEO 메타데이터
   if (category === "neurosurgery" && slug === "peripheral-neuropathy") {
-    return {
-      title: "말초신경병 클리닉 | 인천하이병원 뇌신경센터",
-      description: "손발저림, 화끈거림, 당뇨병성 신경병증 및 손목터널증후군. 신경전도(NCS) 및 근전도(EMG) 정밀 검사 기반 맞춤 치료, 인천하이병원 뇌신경센터.",
-    };
+    return { title: "말초신경병 클리닉 | 인천하이병원 뇌신경센터", description: "손발저림, 화끈거림, 당뇨병성 신경병증 및 손목터널증후군. 신경전도(NCS) 및 근전도(EMG) 정밀 검사 기반 맞춤 치료, 인천하이병원 뇌신경센터." };
   }
 
   const title = item ? `${item.name} | 인천하이병원 ${hubInfo?.title || "진료과"}` : "진료안내 | 인천하이병원";
-  const description = item
-    ? `${item.tagline} - 인천하이병원 ${item.name} 전문 진료 안내.`
-    : "인천하이병원 전문의 협진 맞춤 진료 안내입니다.";
+  const description = item ? `${item.tagline} - 인천하이병원 ${item.name} 전문 진료 안내.` : "인천하이병원 전문의 협진 맞춤 진료 안내입니다.";
 
-  return {
-    title,
-    description,
-  };
+  return { title, description };
 }
 
 /**
  * [서브페이지 블록 데이터 조회 함수]
- * 1차: 카페24 MySQL DB 조회 (원격/로컬 실시간 동기화)
+ * 1차: 그누보드7 g7_pages DB 조회 (원격/로컬 실시간 동기화)
  * 2차: 로컬 JSON 파일 시스템 폴백 (기존 데이터 보존)
  */
 async function getSubpageBuilderData(category: string, slug: string) {
-  const pageKey = `${category}/${slug}`;
+  const pageKey = `${category}-${slug}`;
 
-  // 1. 카페24 MySQL DB 조회
+  // 1. 그누보드7 g7_pages DB 조회
   if (isDbConfigured()) {
     try {
       const rows: any[] = await query(
-        "SELECT category_name, subpage_name, blocks FROM gem_subpage_contents WHERE page_key = ? LIMIT 1",
+        "SELECT slug, title, content FROM g7_pages WHERE slug = ? LIMIT 1",
         [pageKey]
       );
 
       if (rows && rows.length > 0) {
         const row = rows[0];
-        const blocks = typeof row.blocks === "string" ? JSON.parse(row.blocks) : row.blocks;
+        
+        let parsedTitle = row.title;
+        try {
+          const titleObj = JSON.parse(row.title);
+          parsedTitle = titleObj.ko || titleObj.en || row.title;
+        } catch (e) {}
+
+        const blocks = typeof row.content === "string" ? JSON.parse(row.content) : row.content;
+        
         if (blocks && Array.isArray(blocks) && blocks.length > 0) {
           return {
-            category_name: row.category_name,
-            subpage_name: row.subpage_name,
+            category_name: CATEGORY_HUB_DATA[category]?.title || category, // 주메뉴명 fallback
+            subpage_name: parsedTitle,
             blocks: blocks,
           };
         }
@@ -111,10 +95,10 @@ async function getSubpageBuilderData(category: string, slug: string) {
     }
   }
 
-  // 2. 파일 시스템 기반 영구 스토리지 폴백 (data/subpages/*.json)
+  // 2. 파일 시스템 기반 영구 스토리지 폴백
   try {
     const storageDir = path.join(process.cwd(), "data", "subpages");
-    const safeKey = `${category}___${slug}.json`;
+    const safeKey = `${category}-${slug}.json`; // 파일명 규약도 통일
     const filePath = path.join(storageDir, safeKey);
 
     if (fs.existsSync(filePath)) {
@@ -123,6 +107,16 @@ async function getSubpageBuilderData(category: string, slug: string) {
       if (record && record.blocks && record.blocks.length > 0) {
         return record;
       }
+    } else {
+       // 이전 파일명 규약 (___) 호환성 유지
+       const oldFilePath = path.join(storageDir, `${category}___${slug}.json`);
+       if (fs.existsSync(oldFilePath)) {
+         const fileContent = fs.readFileSync(oldFilePath, "utf-8");
+         const record = JSON.parse(fileContent);
+         if (record && record.blocks && record.blocks.length > 0) {
+           return record;
+         }
+       }
     }
   } catch (err) {
     console.error("getSubpageBuilderData file fallback error:", err);
@@ -134,21 +128,11 @@ async function getSubpageBuilderData(category: string, slug: string) {
 export default async function DynamicSubpage({ params }: SubpageRouteProps) {
   const { category, slug } = params;
 
-  // 1. 뇌신경 4대 특화 페이지 (대표님 만족 디자인 100% 안전 보존)
-  if (category === "neurosurgery" && slug === "headache-dizziness") {
-    return <Gem_HeadacheDizzinessPage />;
-  }
-  if (category === "neurosurgery" && slug === "dementia") {
-    return <Gem_DementiaPage />;
-  }
-  if (category === "neurosurgery" && slug === "stroke") {
-    return <Gem_StrokePage />;
-  }
-  if (category === "neurosurgery" && slug === "peripheral-neuropathy") {
-    return <Gem_NeuropathyPage />;
-  }
+  if (category === "neurosurgery" && slug === "headache-dizziness") { return <Gem_HeadacheDizzinessPage />; }
+  if (category === "neurosurgery" && slug === "dementia") { return <Gem_DementiaPage />; }
+  if (category === "neurosurgery" && slug === "stroke") { return <Gem_StrokePage />; }
+  if (category === "neurosurgery" && slug === "peripheral-neuropathy") { return <Gem_NeuropathyPage />; }
 
-  // 2. RDBMS(블록 빌더)에 저장된 블록 데이터 확인 (비동기 DB/파일 조회)
   const builderData = await getSubpageBuilderData(category, slug);
   if (builderData) {
     return (
@@ -162,7 +146,6 @@ export default async function DynamicSubpage({ params }: SubpageRouteProps) {
     );
   }
 
-  // 3. 빌더 데이터가 없는 경우: 기존 내용관리 뷰어로 안전한 폴백
   return (
     <div className="w-full min-h-screen bg-white">
       <Gem_SubpageViewer category={category} slug={slug} />
