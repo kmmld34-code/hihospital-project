@@ -54,8 +54,8 @@ export default function BoardWritePage({ params }: { params: { boardId: string }
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4 min-h-screen">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8 border-b-2 border-gray-900 pb-4">
+    <div className="max-w-[1400px] mx-auto py-12 px-4 min-h-screen">
+      <h1 className="text-4xl font-extrabold text-[#00479A] mb-8 border-b-2 border-blue-100 pb-5">
         새 글 작성
       </h1>
       
@@ -67,7 +67,7 @@ export default function BoardWritePage({ params }: { params: { boardId: string }
             id="subject" 
             value={subject} 
             onChange={(e) => setSubject(e.target.value)} 
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 shadow-inner focus:bg-white focus:ring-2 focus:ring-[#00479A] focus:border-transparent transition-all"
             placeholder="제목을 입력하세요"
             required
           />
@@ -80,7 +80,7 @@ export default function BoardWritePage({ params }: { params: { boardId: string }
             rows={15} 
             value={content} 
             onChange={(e) => setContent(e.target.value)} 
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50 shadow-inner focus:bg-white focus:ring-2 focus:ring-[#00479A] focus:border-transparent transition-all"
             placeholder="내용을 입력하세요 (HTML 태그 사용 가능)"
             required
           />
@@ -90,14 +90,14 @@ export default function BoardWritePage({ params }: { params: { boardId: string }
           <button 
             type="button" 
             onClick={() => router.back()} 
-            className="px-6 py-2 bg-gray-100 text-gray-700 font-medium rounded hover:bg-gray-200"
+            className="px-6 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-full hover:bg-gray-50 hover:text-red-600 transition-colors"
           >
             취소
           </button>
           <button 
             type="submit" 
             disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-700 disabled:bg-blue-300"
+            className="px-6 py-2 bg-gradient-to-r from-[#00479A] to-[#0052CC] text-white font-bold rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:bg-blue-300"
           >
             {loading ? '등록 중...' : '등록하기'}
           </button>

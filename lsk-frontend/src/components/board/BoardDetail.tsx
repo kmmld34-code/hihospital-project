@@ -39,7 +39,7 @@ export default function BoardDetail({ boardId, postId }: { boardId: string, post
   if (!post) return <div className="p-12 text-center">게시글이 없습니다.</div>;
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4">
+    <div className="max-w-[1400px] mx-auto py-10 px-4">
       <div className="mb-6 border-b-2 border-gray-900 pb-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">{post.wr_subject}</h2>
         <div className="flex items-center gap-4 text-sm text-gray-500">

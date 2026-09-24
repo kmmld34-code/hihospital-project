@@ -63,7 +63,7 @@ export default function BoardList({ boardId }: { boardId: string }) {
   const isGallery = boardId === "blog" || config.bo_gallery_cols > 0;
 
   return (
-    <div className="max-w-6xl mx-auto py-10 px-4">
+    <div className="max-w-[1400px] mx-auto py-10 px-4">
       {/* 게시판 상단 헤더 및 버튼 */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b-2 border-gray-900 pb-4">
         <div className="flex items-center gap-3">
