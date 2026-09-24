@@ -4,6 +4,13 @@ import Link from 'next/link';
 
 const parseSubject = (str: any) => { if (!str) return ''; try { const obj = JSON.parse(str); return obj.ko || str; } catch { return str; } };
 
+
+const fixHtmlContent = (html: string) => {
+  if (!html) return '';
+  return html.replace(/src="\/api\/plugins/g, 'src="https://hihospital03.mycafe24.com/api/plugins')
+             .replace(/src='\/api\/plugins/g, "src='https://hihospital03.mycafe24.com/api/plugins");
+};
+
 export default function BoardDetail({ boardId, postId }: { boardId: string, postId: string }) {
   const [post, setPost] = useState<any>(null);
   const [config, setConfig] = useState<any>({});
@@ -42,7 +49,7 @@ export default function BoardDetail({ boardId, postId }: { boardId: string, post
         </div>
       </div>
       <div className="py-8 min-h-[300px] text-gray-800 leading-relaxed whitespace-pre-wrap">
-        {post.wr_content}
+        dangerouslySetInnerHTML={{ __html: fixHtmlContent(post.wr_content) }}
       </div>
       <div className="mt-10 border-t border-gray-200 pt-6 text-right">
         <Link href={`/community/${boardId}`} className="px-6 py-2 bg-gray-100 text-gray-700 font-semibold rounded hover:bg-gray-200 transition-colors">
